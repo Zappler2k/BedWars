@@ -1,0 +1,6 @@
+name: BedWars
+version: '${version}'
+main: de.zappler.bedwars.BedWars
+api-version: 1.19
+authors: [ Zappler2k ]
+description: Its a BedWars Plugin
