@@ -12,7 +12,8 @@ import java.io.File;
 public class ConfigModule implements IModule {
 
     private transient BedWars bedWars;
-    private Integer maxPlayers;
+    private String prefix;
+    private Integer maxTeams;
     private Integer maxPlayersPerTeam;
     private String lobbyName;
 
@@ -22,12 +23,12 @@ public class ConfigModule implements IModule {
         moduleManager.addModule(this, true);
     }
 
-    public ConfigModule(Integer maxPlayers, Integer maxPlayersPerTeam, String lobbyName) {
-        this.maxPlayers = maxPlayers;
+    public ConfigModule(String prefix, Integer maxTeams, Integer maxPlayersPerTeam, String lobbyName) {
+        this.prefix = prefix;
+        this.maxTeams = maxTeams;
         this.maxPlayersPerTeam = maxPlayersPerTeam;
         this.lobbyName = lobbyName;
     }
-
 
     @Override
     public File getFile() {
@@ -46,6 +47,6 @@ public class ConfigModule implements IModule {
 
     @Override
     public String getDefaultConfig() {
-        return new ConfigModule(0, 0, "lobby").toJson();
+        return new ConfigModule("§eBedWars §8| §r", 0, 0, "lobby").toJson();
     }
 }
