@@ -1,0 +1,4 @@
+name: BedWarrs
+version: '1.0-SNAPSHOT'
+main: de.zappler2k.bedWarrs.BedWarrs
+api-version: '1.21'

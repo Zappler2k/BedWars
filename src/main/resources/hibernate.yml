@@ -1,0 +1,6 @@
+database:
+  driver: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost:3306/deine_datenbank
+  username: dein_benutzer
+  password: dein_passwort
+  dialect: org.hibernate.dialect.MySQLDialect
