@@ -4,3 +4,6 @@ database:
   username: dein_benutzer
   password: dein_passwort
   dialect: org.hibernate.dialect.MySQLDialect
+  show_sql: true
+  hbm2ddl_auto: update
+  pool_size: 10
