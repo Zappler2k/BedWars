@@ -1,4 +1,4 @@
-package de.zappler2k.bedWarrs.yml;
+package de.zappler2k.bedWars.yml;
 
 import lombok.SneakyThrows;
 import org.bukkit.configuration.file.YamlConfiguration;
