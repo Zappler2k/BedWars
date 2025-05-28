@@ -2,6 +2,7 @@ package de.zappler2k.bedWars;
 
 
 import de.zappler2k.bedWars.hibernate.managers.StatsPlayerManager;
+import de.zappler2k.bedWars.json.JsonManager;
 import de.zappler2k.bedWars.yml.YamlManager;
 import jakarta.persistence.Entity;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -30,14 +31,22 @@ public final class BedWars extends JavaPlugin {
         // General
         YamlManager yamlManager = new YamlManager();
         yamlManager.addAndCopyFile("hibernate.yml", hibernateConfig);
+
+        // SQL
+
         SessionFactory sessionFactory = loadHibernate(yamlManager.getConfig(hibernateConfig), logger);
 
         // Managers
         StatsPlayerManager statsPlayerManager = new StatsPlayerManager(sessionFactory);
 
+        // JSONManager
+        JsonManager jsonManager = new JsonManager(logger);
+
         // Registration of Listeners and Commands
             // Listeners
         this.getServer().getPluginManager().registerEvents(statsPlayerManager, this);
+
+            // Commands
     }
 
     @Override
@@ -58,7 +67,6 @@ public final class BedWars extends JavaPlugin {
             configuration.setProperty("hibernate.hbm2ddl.auto", config.getString("database.hbm2ddl_auto", "update"));
             configuration.setProperty("hibernate.connection.pool_size", config.getString("database.pool_size", "10"));
 
-
             Reflections reflections = new Reflections("de.zappler2k.bedWars.hibernate.entities");
             Set<Class<?>> entities = reflections.getTypesAnnotatedWith(Entity.class);
             entities.stream().forEach(configuration::addAnnotatedClass);
@@ -72,5 +80,4 @@ public final class BedWars extends JavaPlugin {
         }
         return null;
     }
-
 }
