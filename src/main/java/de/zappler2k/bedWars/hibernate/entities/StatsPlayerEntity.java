@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "statsPlayers")
 @Getter
 @Setter
-public class StatsPlayer {
+public class StatsPlayerEntity {
 
     @Id
     private UUID uuid;

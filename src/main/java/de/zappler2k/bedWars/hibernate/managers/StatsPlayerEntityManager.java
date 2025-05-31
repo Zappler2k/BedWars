@@ -1,7 +1,6 @@
 package de.zappler2k.bedWars.hibernate.managers;
 
-import de.zappler2k.bedWars.hibernate.entities.StatsPlayer;
-import jakarta.persistence.EntityManagerFactory;
+import de.zappler2k.bedWars.hibernate.entities.StatsPlayerEntity;
 import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,15 +13,15 @@ import org.hibernate.Transaction;
 import java.util.*;
 
 @Getter
-public class StatsPlayerManager implements Listener {
+public class StatsPlayerEntityManager implements Listener {
 
 
-    private Map<UUID, StatsPlayer> statsPlayers;
+    private Map<UUID, StatsPlayerEntity> statsPlayers;
     private SessionFactory sessionFactory;
 
-    public StatsPlayerManager(SessionFactory sessionFactory) {
+    public StatsPlayerEntityManager(SessionFactory sessionFactory) {
         statsPlayers = new HashMap<>();
-        StatsPlayer statsPlayer = new StatsPlayer();
+        StatsPlayerEntity statsPlayerEntity = new StatsPlayerEntity();
         this.sessionFactory = sessionFactory;
     }
 
@@ -33,25 +32,25 @@ public class StatsPlayerManager implements Listener {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        StatsPlayer statsPlayer = session.get(StatsPlayer.class, uuid);
+        StatsPlayerEntity statsPlayerEntity = session.get(StatsPlayerEntity.class, uuid);
 
-        if(statsPlayer == null) {
-            statsPlayer = new StatsPlayer();
-            statsPlayer.setUuid(uuid);
-            statsPlayer.setKills(0);
-            statsPlayer.setDeaths(0);
-            statsPlayer.setWins(0);
-            statsPlayer.setLosses(0);
-            statsPlayer.setPlayTime(0L);
-            statsPlayer.setBedDestroyed(0);
-            statsPlayer.setFinalKills(0);
-            session.persist(statsPlayer);
+        if(statsPlayerEntity == null) {
+            statsPlayerEntity = new StatsPlayerEntity();
+            statsPlayerEntity.setUuid(uuid);
+            statsPlayerEntity.setKills(0);
+            statsPlayerEntity.setDeaths(0);
+            statsPlayerEntity.setWins(0);
+            statsPlayerEntity.setLosses(0);
+            statsPlayerEntity.setPlayTime(0L);
+            statsPlayerEntity.setBedDestroyed(0);
+            statsPlayerEntity.setFinalKills(0);
+            session.persist(statsPlayerEntity);
         }
         transaction.commit();
         session.close();
 
         if(!statsPlayers.containsKey(uuid)) {
-            statsPlayers.put(uuid, statsPlayer);
+            statsPlayers.put(uuid, statsPlayerEntity);
         } else {
         }
     }
