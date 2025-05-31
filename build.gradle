@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
-    id("org.hibernate.orm") version "7.0.0.Final"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = 'de.zappler2k'
@@ -20,9 +20,20 @@ repositories {
 }
 
 dependencies {
+
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+
+    implementation("org.hibernate.orm:hibernate-core:6.6.1.Final")
+
+    implementation("com.mysql:mysql-connector-j:8.4.0")
+
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
+
+    implementation 'org.reflections:reflections:0.10.2'
+
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.json:json:20231013'
 }
 
 tasks {

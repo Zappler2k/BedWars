@@ -1,4 +1,4 @@
-name: BedWarrs
+name: BedWars
 version: '1.0-SNAPSHOT'
-main: de.zappler2k.bedWarrs.BedWarrs
+main: de.zappler2k.bedWars.BedWars
 api-version: '1.21'
