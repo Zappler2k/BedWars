@@ -16,6 +16,7 @@ public class GameMap {
     private String name;
     private int maxTeams;
     private int maxPlayersPerTeam;
+    private int minPlayersPerTeam;
     private String wordName;
     private List<Team> team;
     private List<Spawner> spawners;

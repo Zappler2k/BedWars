@@ -13,7 +13,7 @@ import org.hibernate.Transaction;
 import java.util.*;
 
 @Getter
-public class StatsPlayerEntityManager implements Listener {
+public class StatsPlayerEntityManager {
 
 
     private Map<UUID, StatsPlayerEntity> statsPlayers;
@@ -26,7 +26,6 @@ public class StatsPlayerEntityManager implements Listener {
     }
 
 
-    @EventHandler
     public void playerJoinListener(PlayerJoinEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         Session session = sessionFactory.openSession();
@@ -55,7 +54,6 @@ public class StatsPlayerEntityManager implements Listener {
         }
     }
 
-    @EventHandler
     public void playerQuitListener(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         Session session = sessionFactory.openSession();
