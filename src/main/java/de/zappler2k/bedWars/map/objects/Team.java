@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.bukkit.Color;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,10 +18,12 @@ public class Team {
     private Color color;
     private Location spawnLoaction;
     private Location upperBedLocation;
-    private Location downerBedLocation;
+    private Location lowerBedLocation;
     private List<Spawner> spawners;
-    private List<Villager> villagers;
     private Location region_1;
     private Location region_2;
 
+    public Team() {
+        this.spawners = new ArrayList<>();
+    }
 }

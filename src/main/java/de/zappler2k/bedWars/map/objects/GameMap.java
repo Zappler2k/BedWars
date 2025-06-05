@@ -5,19 +5,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class GameMap {
 
     private String name;
-    private int maxTeams;
-    private int maxPlayersPerTeam;
-    private int minPlayersPerTeam;
+    private Integer maxTeams;
+    private Integer maxPlayersPerTeam;
+    private Integer minPlayersPerTeam;
     private String wordName;
-    private List<Team> team;
+    private List<Villager> villagers;
+    private List<Team> teams;
     private List<Spawner> spawners;
+
+    public GameMap() {
+        this.teams = new ArrayList<>();
+        this.spawners = new ArrayList<>();
+    }
 }

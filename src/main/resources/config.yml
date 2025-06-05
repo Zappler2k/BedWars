@@ -1,4 +1,4 @@
-prefix: §4BedWars
+prefix: &4BedWars
 useLocalData: true
 setupMode: false
 permission: You don't have the Permission to perform this command.

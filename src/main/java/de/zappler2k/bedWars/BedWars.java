@@ -2,11 +2,14 @@ package de.zappler2k.bedWars;
 
 
 import de.zappler2k.bedWars.command.CommandManager;
+import de.zappler2k.bedWars.commands.mapsetup.MapSetup;
+import de.zappler2k.bedWars.commands.teamsetup.TeamSetup;
 import de.zappler2k.bedWars.hibernate.managers.MapEntityManager;
 import de.zappler2k.bedWars.hibernate.managers.StatsPlayerEntityManager;
 import de.zappler2k.bedWars.json.JsonManager;
 import de.zappler2k.bedWars.map.objects.GameMap;
 import de.zappler2k.bedWars.setup.map.MapSetupManager;
+import de.zappler2k.bedWars.setup.map.TeamSetupManager;
 import de.zappler2k.bedWars.spigot.SpigotManager;
 import de.zappler2k.bedWars.spigot.SpigotPlayer;
 import de.zappler2k.bedWars.yml.YamlManager;
@@ -43,13 +46,16 @@ public final class BedWars extends JavaPlugin {
         Logger logger = this.getLogger();
 
         // FILES
+
         File hibernateConfig = new File(this.getDataFolder() + "/hibernate.yml");
         File config = new File(this.getDataFolder() + "/config.yml");
         // General
+
         YamlManager yamlManager = new YamlManager();
         yamlManager.addAndCopyFile("hibernate.yml", hibernateConfig);
         yamlManager.addAndCopyFile("config.yml", config);
             // YamlConfigurations
+
             YamlConfiguration yamConfigurationConfig = yamlManager.getConfig(config);
         // SQL
 
@@ -57,16 +63,26 @@ public final class BedWars extends JavaPlugin {
 
         // Managers
             // Hibernate
+
         StatsPlayerEntityManager statsPlayerEntityManager = new StatsPlayerEntityManager(sessionFactory);
         MapEntityManager mapEntityManager = new MapEntityManager(sessionFactory);
             // General
+
         CommandManager commandManager = new CommandManager(this);
         if(yamConfigurationConfig.getBoolean("setupMode")) {
-            MapSetupManager mapSetupManager = new MapSetupManager();
+            // Managers
+
+            MapSetupManager mapSetupManager = new MapSetupManager(this);
+            TeamSetupManager teamSetupManager = new TeamSetupManager(this, mapSetupManager);
+
+            // Commands
+            commandManager.registerCommand("mapsetup", new MapSetup("bedwars.admin.setup.map", mapSetupManager));
+            commandManager.registerCommand("teamsetup", new TeamSetup("bedwars.admin.setup.team"));
         }
         SpigotManager spigotManager = new SpigotManager();
 
         // JSONManager
+
         JsonManager jsonManager = new JsonManager(logger);
 
         // Registration of Listeners and Commands
