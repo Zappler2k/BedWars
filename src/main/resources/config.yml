@@ -1,4 +1,10 @@
+# BedWars Plugin Configuration
+
+# Plugin Settings
 prefix: &4BedWars
-useLocalData: true
 setupMode: false
-permission: You don't have the Permission to perform this command.
+variant: 4x4  # The default variant for maps (e.g., 4x4, 2x2, 3x3)
+
+# Messages
+messages:
+  noPermission: &cYou don't have the Permission to perform this command.

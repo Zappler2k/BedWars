@@ -15,102 +15,62 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapEntityManager {
-
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
+    private final Gson gson;
 
     public MapEntityManager(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+        this.gson = new GsonBuilder()
+            .registerTypeAdapter(Location.class, new LocationTypeAdapter())
+            .create();
     }
 
-    public void createGameMapSave(GameMap gameConfig) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            MapEntity mapEntity = session.get(MapEntity.class, gameConfig.getName());
-            if(mapEntity != null) {
-                return;
-            }
-            mapEntity = new MapEntity(gameConfig.getName(), new GsonBuilder().registerTypeAdapter(Location.class, new LocationTypeAdapter()).create().toJson(gameConfig),
-                    gameConfig.getMaxTeams() + "x" + gameConfig.getMaxPlayersPerTeam());
-            session.save(mapEntity);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            session.close();
+    public void createGameMapSave(GameMap gameMap) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction tx = session.beginTransaction();
+            MapEntity entity = new MapEntity(
+                gameMap.getName(),
+                gson.toJson(gameMap),
+                gameMap.getMaxTeams() + "x" + gameMap.getMaxPlayersPerTeam()
+            );
+            session.save(entity);
+            tx.commit();
         }
     }
 
     public GameMap getGameMapSaveByName(String name) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            MapEntity mapEntity = session.get(MapEntity.class, name);
-            if(mapEntity == null) {
-                return null;
-            }
-            transaction.commit();
-            return new Gson().fromJson(mapEntity.getConfig(), GameMap.class);
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            session.close();
+        try (Session session = sessionFactory.openSession()) {
+            MapEntity entity = session.get(MapEntity.class, name);
+            return entity != null ? gson.fromJson(entity.getConfig(), GameMap.class) : null;
         }
     }
 
     public List<GameMap> getGameMapSaveByVariant(String variant) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
+        try (Session session = sessionFactory.openSession()) {
             Query<MapEntity> query = session.createQuery(
-                    "FROM MapEntity WHERE variant = :variant", MapEntity.class);
+                "FROM MapEntity WHERE variant = :variant", 
+                MapEntity.class
+            );
             query.setParameter("variant", variant);
-            List<MapEntity> mapEntities = query.getResultList();
-            if(mapEntities == null || mapEntities.isEmpty()) {
-                return new ArrayList<>();
+            
+            List<GameMap> maps = new ArrayList<>();
+            for (MapEntity entity : query.list()) {
+                maps.add(gson.fromJson(entity.getConfig(), GameMap.class));
             }
-            transaction.commit();
-            List<GameMap> gameMaps = new ArrayList<>();
-            Gson gson = new Gson();
-            for(MapEntity entity : mapEntities) {
-                gameMaps.add(gson.fromJson(entity.getConfig(), GameMap.class));
-            }
-            return gameMaps;
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            session.close();
+            return maps;
         }
     }
 
-    public void saveGameMap(GameMap gameMap) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            MapEntity mapEntity = new MapEntity(gameMap.getName(), new Gson().toJson(gameMap),
-                    gameMap.getMaxTeams() + "x" + gameMap.getMaxPlayersPerTeam());
-            session.merge(mapEntity);
-            transaction.commit();
+    public List<String> getAllVariants() {
+        try (Session session = sessionFactory.openSession()) {
+            Query<String> query = session.createQuery(
+                "SELECT DISTINCT m.variant FROM MapEntity m WHERE m.variant IS NOT NULL", 
+                String.class
+            );
+            return query.list();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw e;
-        } finally {
-            session.close();
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

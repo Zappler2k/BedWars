@@ -1,12 +1,18 @@
 package de.zappler2k.bedWars.setup.map;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import de.zappler2k.bedWars.json.init.LocationTypeAdapter;
 import de.zappler2k.bedWars.map.objects.GameMap;
+import de.zappler2k.bedWars.map.objects.Team;
 import de.zappler2k.bedWars.map.objects.Spawner;
 import de.zappler2k.bedWars.map.objects.Villager;
+import de.zappler2k.bedWars.map.objects.init.SpawnerType;
+import de.zappler2k.bedWars.map.objects.init.VillagerType;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -131,6 +137,7 @@ public class MapSetupManager {
         StringBuilder stringBuilder = new StringBuilder();
         boolean hasErrors = false;
 
+        // Validate all required components
         hasErrors |= validateMapName(gameMap, stringBuilder);
         hasErrors |= validateMaxPlayersPerTeam(gameMap, stringBuilder);
         hasErrors |= validateMaxTeams(gameMap, stringBuilder);
@@ -141,27 +148,44 @@ public class MapSetupManager {
         hasErrors |= validatePositiveValues(gameMap, stringBuilder);
         hasErrors |= validateSpawners(gameMap, stringBuilder);
         hasErrors |= validateVillagers(gameMap, stringBuilder);
+        hasErrors |= validateTeams(gameMap, stringBuilder);
 
         if (hasErrors) {
             return "There are some errors preventing the map setup from being completed:\n" + stringBuilder.toString();
-        } else {
-            File file = new File(plugin.getDataFolder() + "/configs/" + gameMap.getName() + ".json");
-            if(!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
+        }
+
+        try {
+            // Create config directory if it doesn't exist
+            File configDir = new File(plugin.getDataFolder() + "/configs");
+            if (!configDir.exists()) {
+                configDir.mkdirs();
             }
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(new Gson().toJson(getGameMapSetup(uuid)));
-            fileWriter.flush();
-            fileWriter.close();
-            file.createNewFile();
-            return "Map setup completed successfully! \n" +
-                    "The map can also uploaded to the database!";
+
+            // Save the map configuration
+            File file = new File(configDir, gameMap.getName() + ".json");
+            Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(Location.class, new LocationTypeAdapter())
+                .create();
+            
+            try (FileWriter fileWriter = new FileWriter(file)) {
+                fileWriter.write(gson.toJson(gameMap));
+                fileWriter.flush();
+            }
+
+            // Clean up the setup
+            currentSetups.remove(uuid);
+            currentStep.remove(uuid);
+
+            return "Map setup completed successfully! The map has been saved to: " + file.getPath();
+        } catch (Exception e) {
+            return "Error saving map configuration: " + e.getMessage();
         }
     }
 
     private boolean validateMapName(GameMap gameMap, StringBuilder stringBuilder) {
         if (gameMap.getName() == null) {
-            stringBuilder.append("The name for the map was not set.\n");
+            stringBuilder.append("§cThe map name has not been set. Use §e/mapsetup setName <name> §cto set it.\n");
             return true;
         }
         return false;
@@ -169,7 +193,7 @@ public class MapSetupManager {
 
     private boolean validateMaxPlayersPerTeam(GameMap gameMap, StringBuilder stringBuilder) {
         if (gameMap.getMaxPlayersPerTeam() == null) {
-            stringBuilder.append("The maximum players per team was not set.\n");
+            stringBuilder.append("§cThe maximum players per team has not been set. Use §e/mapsetup setMaxPlayersPerTeam <amount> §cto set it.\n");
             return true;
         }
         return false;
@@ -177,7 +201,7 @@ public class MapSetupManager {
 
     private boolean validateMaxTeams(GameMap gameMap, StringBuilder stringBuilder) {
         if (gameMap.getMaxTeams() == null) {
-            stringBuilder.append("The maximum number of teams was not set.\n");
+            stringBuilder.append("§cThe maximum number of teams has not been set. Use §e/mapsetup setMaxTeams <amount> §cto set it.\n");
             return true;
         }
         return false;
@@ -185,7 +209,7 @@ public class MapSetupManager {
 
     private boolean validateMinPlayersPerTeam(GameMap gameMap, StringBuilder stringBuilder) {
         if (gameMap.getMinPlayersPerTeam() == null) {
-            stringBuilder.append("The minimum players per team was not set.\n");
+            stringBuilder.append("§cThe minimum players per team has not been set. Use §e/mapsetup setMinPlayersPerTeam <amount> §cto set it.\n");
             return true;
         }
         return false;
@@ -193,7 +217,7 @@ public class MapSetupManager {
 
     private boolean validateWorldName(GameMap gameMap, StringBuilder stringBuilder) {
         if (gameMap.getWordName() == null) {
-            stringBuilder.append("The world name for the map was not set.\n");
+            stringBuilder.append("§cThe world name has not been set. Use §e/mapsetup setWorld <name> §cto set it.\n");
             return true;
         }
         return false;
@@ -202,8 +226,8 @@ public class MapSetupManager {
     private boolean validateTeamCount(GameMap gameMap, StringBuilder stringBuilder) {
         if (gameMap.getTeams() != null && gameMap.getMaxTeams() != null
                 && gameMap.getTeams().size() < gameMap.getMaxTeams()) {
-            stringBuilder.append("Not enough teams configured. Current teams: " + gameMap.getTeams().size()
-                    + ", Required: " + gameMap.getMaxTeams() + "\n");
+            stringBuilder.append("§cNot enough teams configured. Current teams: §e" + gameMap.getTeams().size()
+                    + "§c, Required: §e" + gameMap.getMaxTeams() + "§c. Use §e/teamsetup §cto configure more teams.\n");
             return true;
         }
         return false;
@@ -212,7 +236,7 @@ public class MapSetupManager {
     private boolean validatePlayersPerTeamLogic(GameMap gameMap, StringBuilder stringBuilder) {
         if (gameMap.getMinPlayersPerTeam() != null && gameMap.getMaxPlayersPerTeam() != null
                 && gameMap.getMinPlayersPerTeam() > gameMap.getMaxPlayersPerTeam()) {
-            stringBuilder.append("The minimum players per team cannot be greater than the maximum players per team.\n");
+            stringBuilder.append("§cThe minimum players per team (§e" + gameMap.getMinPlayersPerTeam() + "§c) cannot be greater than the maximum players per team (§e" + gameMap.getMaxPlayersPerTeam() + "§c).\n");
             return true;
         }
         return false;
@@ -222,12 +246,12 @@ public class MapSetupManager {
         boolean hasError = false;
 
         if (gameMap.getMaxTeams() != null && gameMap.getMaxTeams() <= 0) {
-            stringBuilder.append("The maximum number of teams must be greater than zero.\n");
+            stringBuilder.append("§cThe maximum number of teams must be greater than zero. Current value: §e" + gameMap.getMaxTeams() + "§c\n");
             hasError = true;
         }
 
         if (gameMap.getMinPlayersPerTeam() != null && gameMap.getMinPlayersPerTeam() <= 0) {
-            stringBuilder.append("The minimum players per team must be greater than zero.\n");
+            stringBuilder.append("§cThe minimum players per team must be greater than zero. Current value: §e" + gameMap.getMinPlayersPerTeam() + "§c\n");
             hasError = true;
         }
 
@@ -238,23 +262,18 @@ public class MapSetupManager {
         boolean hasError = false;
 
         if (gameMap.getSpawners() == null || gameMap.getSpawners().isEmpty()) {
-            stringBuilder.append("At least one spawner must be configured for the map.\n");
+            stringBuilder.append("§cAt least one spawner must be configured for the map. Use §e/mapsetup setSpawner §cto add spawners.\n");
             hasError = true;
         } else {
             // Validate each spawner
             for (int i = 0; i < gameMap.getSpawners().size(); i++) {
                 Spawner spawner = gameMap.getSpawners().get(i);
                 if (spawner.getSpawnerType() == null) {
-                    stringBuilder.append("Spawner #" + (i + 1) + " has no spawner type set.\n");
-                    hasError = true;
-                }
-                if (spawner.getLocation() == null) {
-                    stringBuilder.append("Spawner #" + (i + 1) + " has no location set.\n");
+                    stringBuilder.append("§cSpawner #" + (i + 1) + " has no type set. Use §e/mapsetup setSpawner §cto configure it properly.\n");
                     hasError = true;
                 }
             }
         }
-
         return hasError;
     }
 
@@ -274,6 +293,43 @@ public class MapSetupManager {
         }
 
         return hasError;
+    }
+
+    private boolean validateTeams(GameMap gameMap, StringBuilder stringBuilder) {
+        if (gameMap.getTeams() == null || gameMap.getTeams().isEmpty()) {
+            stringBuilder.append("§cNo teams have been configured. Use §e/teamsetup §cto configure teams.\n");
+            return true;
+        }
+
+        boolean hasErrors = false;
+        for (int i = 0; i < gameMap.getTeams().size(); i++) {
+            Team team = gameMap.getTeams().get(i);
+            if (team.getName() == null || team.getName().isEmpty()) {
+                stringBuilder.append("§cTeam " + (i + 1) + " is missing a name.\n");
+                hasErrors = true;
+            }
+            if (team.getColor() == null) {
+                stringBuilder.append("§cTeam " + (i + 1) + " is missing a color.\n");
+                hasErrors = true;
+            }
+            if (team.getSpawnLoaction() == null) {
+                stringBuilder.append("§cTeam " + (i + 1) + " is missing a spawn location.\n");
+                hasErrors = true;
+            }
+            if (team.getUpperBedLocation() == null || team.getLowerBedLocation() == null) {
+                stringBuilder.append("§cTeam " + (i + 1) + " is missing bed locations.\n");
+                hasErrors = true;
+            }
+            if (team.getRegion_1() == null || team.getRegion_2() == null) {
+                stringBuilder.append("§cTeam " + (i + 1) + " is missing region points.\n");
+                hasErrors = true;
+            }
+            if (team.getSpawners() == null || team.getSpawners().isEmpty()) {
+                stringBuilder.append("§cTeam " + (i + 1) + " has no spawners configured.\n");
+                hasErrors = true;
+            }
+        }
+        return hasErrors;
     }
 
     private boolean checkMapNameAlreadySet(GameMap gameMap, StringBuilder stringBuilder) {
@@ -397,136 +453,215 @@ public class MapSetupManager {
 
     public SetupStep getCurrentStep(GameMap gameMap) {
         if (gameMap == null) {
-            throw new IllegalArgumentException("GameMap darf nicht null sein");
-        }
-
-        // Prüfung in der Reihenfolge der Setup-Schritte
-        if (isNullOrEmpty(gameMap.getName())) {
             return SetupStep.MAP_NAME;
         }
 
-        if (isNullOrEmpty(gameMap.getWordName())) {
+        if (gameMap.getName() == null) {
+            return SetupStep.MAP_NAME;
+        }
+
+        if (gameMap.getWordName() == null) {
             return SetupStep.WORLD_NAME;
         }
 
-        if (gameMap.getMaxTeams() == null || gameMap.getMaxTeams() <= 0) {
+        if (gameMap.getMaxTeams() == null) {
             return SetupStep.MAX_TEAMS;
         }
 
-        if (gameMap.getMinPlayersPerTeam() == null || gameMap.getMinPlayersPerTeam() <= 0) {
-            return SetupStep.MIN_PLAYERS_PER_TEAM;
+        if (gameMap.getMaxPlayersPerTeam() == null) {
+            return SetupStep.MAX_PLAYERS_PER_TEAM;
         }
 
-        if (gameMap.getMaxPlayersPerTeam() == null || gameMap.getMaxPlayersPerTeam() <= 0) {
-            return SetupStep.MAX_PLAYERS_PER_TEAM;
+        if (gameMap.getMinPlayersPerTeam() == null) {
+            return SetupStep.MIN_PLAYERS_PER_TEAM;
         }
 
         if (gameMap.getMinPlayersPerTeam() > gameMap.getMaxPlayersPerTeam()) {
             return SetupStep.MIN_PLAYERS_PER_TEAM;
         }
 
-        if (!isTeamConfigurationComplete(gameMap)) {
+        if (gameMap.getTeams() == null || gameMap.getTeams().size() < gameMap.getMaxTeams()) {
             return SetupStep.TEAM_CONFIGURATION;
         }
 
-        if (!isSpawnerConfigurationComplete(gameMap)) {
+        // Check if at least one spawner of each resource type is set
+        boolean hasIronSpawner = false;
+        boolean hasGoldSpawner = false;
+        boolean hasDiamondSpawner = false;
+
+        if (gameMap.getSpawners() != null) {
+            for (Spawner spawner : gameMap.getSpawners()) {
+                if (spawner.getSpawnerType() == SpawnerType.IRON) {
+                    hasIronSpawner = true;
+                } else if (spawner.getSpawnerType() == SpawnerType.GOLD) {
+                    hasGoldSpawner = true;
+                } else if (spawner.getSpawnerType() == SpawnerType.DIAMOND) {
+                    hasDiamondSpawner = true;
+                }
+            }
+        }
+
+        // Check if at least one shop and upgrade manager is set in the map
+        boolean hasShop = false;
+        boolean hasUpgradeManager = false;
+        if (gameMap.getVillagers() != null) {
+            for (Villager villager : gameMap.getVillagers()) {
+                if (villager.getVillagerType() == VillagerType.SHOP) {
+                    hasShop = true;
+                } else if (villager.getVillagerType() == VillagerType.UPGRADE) {
+                    hasUpgradeManager = true;
+                }
+            }
+        }
+
+        // Return the appropriate step based on what's missing
+        if (!hasIronSpawner || !hasGoldSpawner || !hasDiamondSpawner) {
             return SetupStep.SPAWNER_CONFIGURATION;
         }
 
-         if (!isVillagerConfigurationComplete(gameMap)) {
-             return SetupStep.VILLAGER_CONFIGURATION;
-         }
+        if (!hasShop || !hasUpgradeManager) {
+            return SetupStep.VILLAGER_CONFIGURATION;
+        }
 
         return SetupStep.SETUP_COMPLETE;
     }
 
-    public String getCurrentStepInfo(GameMap gameMap) {
+    public String getCurrentStepInfo(UUID uuid) {
+        GameMap gameMap = getGameMapSetup(uuid);
         if (gameMap == null) {
-            return "Error: GameMap is null";
+            return "§cNo active map setup found!";
         }
 
         SetupStep currentStep = getCurrentStep(gameMap);
-        return getStepDescription(currentStep, gameMap);
-    }
-
-    public String getCurrentStepInfo(UUID uuid) {
-        GameMap gameMap = getGameMapSetup(uuid);
-        return getCurrentStepInfo(gameMap);
-    }
-
-    private String getStepDescription(SetupStep step, GameMap gameMap) {
-        switch (step) {
+        switch (currentStep) {
             case MAP_NAME:
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Set a name for your map.";
-
+                return "§eCurrent step: §aSet Map Name\n§eUse: §a/mapsetup setName <name>";
             case WORLD_NAME:
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Set the world name for your map.";
-
+                return "§eCurrent step: §aSet World Name\n§eUse: §a/mapsetup setWorldName <name>";
             case MAX_TEAMS:
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Set the maximum number of teams.";
-
-            case MIN_PLAYERS_PER_TEAM:
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Set the minimum players per team.";
-
+                return "§eCurrent step: §aSet Maximum Teams\n§eUse: §a/mapsetup setMaxTeams <number>";
             case MAX_PLAYERS_PER_TEAM:
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Set the maximum players per team.";
-
+                return "§eCurrent step: §aSet Maximum Players per Team\n§eUse: §a/mapsetup setMaxPlayersPerTeam <number>";
+            case MIN_PLAYERS_PER_TEAM:
+                if (gameMap.getMaxPlayersPerTeam() == null) {
+                    return "§cError: You must set the maximum players per team first!";
+                }
+                if (gameMap.getMinPlayersPerTeam() != null && gameMap.getMinPlayersPerTeam() > gameMap.getMaxPlayersPerTeam()) {
+                    return "§cError: Minimum players per team cannot be greater than maximum players per team!";
+                }
+                return "§eCurrent step: §aSet Minimum Players per Team\n§eUse: §a/mapsetup setMinPlayersPerTeam <number>";
             case TEAM_CONFIGURATION:
-                int currentTeams = gameMap.getTeams() != null ? gameMap.getTeams().size() : 0;
-                int requiredTeams = gameMap.getMaxTeams() != null ? gameMap.getMaxTeams() : 0;
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Configure teams for your map.\n" +
-                        "Current Teams: " + currentTeams + "/" + requiredTeams + "\n" +
-                        "You need to add " + (requiredTeams - currentTeams) + " more team(s).";
-
+                return "§eCurrent step: §aConfigure Teams\n§eUse: §a/mapsetup team";
             case SPAWNER_CONFIGURATION:
-                int currentSpawners = gameMap.getSpawners() != null ? gameMap.getSpawners().size() : 0;
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Configure spawners for your map.\n" +
-                        "Current Spawners: " + currentSpawners + "\n" +
-                        "You need at least 1 spawner with valid type and location.";
+                StringBuilder spawnerMessage = new StringBuilder();
+                spawnerMessage.append("§eCurrent step: §aConfigure Resource Spawners\n");
+                spawnerMessage.append("§cYou must set at least one spawner of each type:\n");
+                
+                // Check which spawners are missing
+                boolean hasIronSpawner = false;
+                boolean hasGoldSpawner = false;
+                boolean hasDiamondSpawner = false;
 
+                if (gameMap.getSpawners() != null) {
+                    for (Spawner spawner : gameMap.getSpawners()) {
+                        if (spawner.getSpawnerType() == SpawnerType.IRON) hasIronSpawner = true;
+                        else if (spawner.getSpawnerType() == SpawnerType.GOLD) hasGoldSpawner = true;
+                        else if (spawner.getSpawnerType() == SpawnerType.DIAMOND) hasDiamondSpawner = true;
+                    }
+                }
+
+                if (!hasIronSpawner) spawnerMessage.append("§c- Iron Spawner\n");
+                if (!hasGoldSpawner) spawnerMessage.append("§c- Gold Spawner\n");
+                if (!hasDiamondSpawner) spawnerMessage.append("§c- Diamond Spawner\n");
+
+                spawnerMessage.append("\n§eUse: §a/mapsetup setSpawner\n");
+                spawnerMessage.append("§eNote: You can set both spawners and villagers at any time!");
+                return spawnerMessage.toString();
             case VILLAGER_CONFIGURATION:
-                int currentVillagers = gameMap.getVillagers() != null ? gameMap.getVillagers().size() : 0;
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Configure villagers for your map.\n" +
-                        "Current Villagers: " + currentVillagers + "\n" +
-                        "Add villagers as needed for your map.";
+                StringBuilder villagerMessage = new StringBuilder();
+                villagerMessage.append("§eCurrent step: §aConfigure Shops and Upgrade Managers\n");
+                
+                // Check which villagers are missing
+                boolean hasShop = false;
+                boolean hasUpgrade = false;
+                if (gameMap.getVillagers() != null) {
+                    for (Villager villager : gameMap.getVillagers()) {
+                        if (villager.getVillagerType() == VillagerType.SHOP) hasShop = true;
+                        if (villager.getVillagerType() == VillagerType.UPGRADE) hasUpgrade = true;
+                    }
+                }
 
+                if (!hasShop && !hasUpgrade) {
+                    villagerMessage.append("§cYou need to set both a Shop and an Upgrade Manager!\n");
+                } else {
+                    if (!hasShop) villagerMessage.append("§cYou still need to set a Shop!\n");
+                    if (!hasUpgrade) villagerMessage.append("§cYou still need to set an Upgrade Manager!\n");
+                }
+
+                villagerMessage.append("\n§eUse: §a/mapsetup setVillager\n");
+                villagerMessage.append("§eNote: You can set both spawners and villagers at any time!");
+                return villagerMessage.toString();
             case SETUP_COMPLETE:
-                return "Current Step: " + step.getDisplayName() + "\n" +
-                        "Action Required: Your map setup is complete! /mapsetup finish.";
-
+                StringBuilder completeMessage = new StringBuilder();
+                completeMessage.append("§aMap setup is complete!\n");
+                completeMessage.append("§eYou can still add more spawners and villagers if needed.\n");
+                completeMessage.append("§eUse: §a/mapsetup finish §eto complete the setup.");
+                return completeMessage.toString();
             default:
-                return "Current Step: Unknown\n" +
-                        "Action Required: Please check your map configuration.";
+                return "§cUnknown setup step!";
         }
     }
 
-    private boolean isTeamConfigurationComplete(GameMap gameMap) {
-        return gameMap.getTeams() != null &&
-                !gameMap.getTeams().isEmpty() &&
-                gameMap.getTeams().size() >= gameMap.getMaxTeams();
-    }
+    public boolean canFinishSetup(GameMap gameMap) {
+        if (gameMap == null) return false;
 
-    private boolean isSpawnerConfigurationComplete(GameMap gameMap) {
-        return gameMap.getSpawners() != null &&
-                !gameMap.getSpawners().isEmpty() &&
-                gameMap.getSpawners().stream().allMatch(spawner ->
-                        spawner.getSpawnerType() != null && spawner.getLocation() != null);
-    }
+        // Check if all required steps are completed
+        if (gameMap.getName() == null || gameMap.getWordName() == null || 
+            gameMap.getMaxTeams() == null || gameMap.getMaxPlayersPerTeam() == null || 
+            gameMap.getMinPlayersPerTeam() == null) {
+            return false;
+        }
 
-    private boolean isVillagerConfigurationComplete(GameMap gameMap) {
-        // Since villagers are optional, this method can be used if you want to make them mandatory
-        return gameMap.getVillagers() != null && !gameMap.getVillagers().isEmpty();
-    }
+        // Check if all teams are configured
+        if (gameMap.getTeams() == null || gameMap.getTeams().size() < gameMap.getMaxTeams()) {
+            return false;
+        }
 
-    private boolean isNullOrEmpty(String str) {
-        return str == null || str.trim().isEmpty();
+        // Check if at least one spawner of each resource type is set
+        boolean hasIronSpawner = false;
+        boolean hasGoldSpawner = false;
+        boolean hasDiamondSpawner = false;
+
+        if (gameMap.getSpawners() != null) {
+            for (Spawner spawner : gameMap.getSpawners()) {
+                if (spawner.getSpawnerType() == SpawnerType.IRON) {
+                    hasIronSpawner = true;
+                } else if (spawner.getSpawnerType() == SpawnerType.GOLD) {
+                    hasGoldSpawner = true;
+                } else if (spawner.getSpawnerType() == SpawnerType.DIAMOND) {
+                    hasDiamondSpawner = true;
+                }
+            }
+        }
+
+        if (!hasIronSpawner || !hasGoldSpawner || !hasDiamondSpawner) {
+            return false;
+        }
+
+        // Check if at least one shop and upgrade manager is set
+        boolean hasShop = false;
+        boolean hasUpgradeManager = false;
+        if (gameMap.getVillagers() != null) {
+            for (Villager villager : gameMap.getVillagers()) {
+                if (villager.getVillagerType() == VillagerType.SHOP) {
+                    hasShop = true;
+                } else if (villager.getVillagerType() == VillagerType.UPGRADE) {
+                    hasUpgradeManager = true;
+                }
+            }
+        }
+
+        return hasShop && hasUpgradeManager;
     }
 }
+

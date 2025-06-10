@@ -7,14 +7,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
-public class SetNameCommand extends SubCommand {
+public class SetMaxTeamsCommand extends SubCommand {
 
     private MapSetup mapSetup;
 
-    public SetNameCommand(String permission, MapSetup mapSetup) {
+    public SetMaxTeamsCommand(String permission, MapSetup mapSetup) {
         super(permission);
         this.mapSetup = mapSetup;
     }
@@ -37,8 +36,8 @@ public class SetNameCommand extends SubCommand {
 
         // Check if we're in the correct step
         SetupStep currentStep = mapSetup.getMapSetupManager().getCurrentStep(mapSetup.getMapSetupManager().getGameMapSetup(uuid));
-        if (currentStep != SetupStep.MAP_NAME) {
-            player.sendMessage("§cYou can only set the map name in the Map Name step!");
+        if (currentStep != SetupStep.MAX_TEAMS) {
+            player.sendMessage("§cYou can only set the maximum teams in the Maximum Teams step!");
             player.sendMessage("§eCurrent step: §c" + currentStep.getDisplayName());
             player.sendMessage(mapSetup.getMapSetupManager().getCurrentStepInfo(uuid));
             return true;
@@ -46,31 +45,43 @@ public class SetNameCommand extends SubCommand {
 
         // Validate arguments
         if (args.length != 2) {
-            player.sendMessage("§cUsage: §e/mapsetup setName <name>");
-            player.sendMessage("§7Example: §e/mapsetup setName Castle");
+            player.sendMessage("§cUsage: §e/mapsetup setMaxTeams <amount>");
+            player.sendMessage("§7Example: §e/mapsetup setMaxTeams 4");
             return true;
         }
 
-        String name = args[1].trim();
-        if (name.isEmpty()) {
-            player.sendMessage("§cThe map name cannot be empty! Please provide a valid name.");
+        String amountStr = args[1].trim();
+        if (amountStr.isEmpty()) {
+            player.sendMessage("§cPlease provide a valid number for the maximum teams!");
             return true;
         }
 
-        if (name.length() > 32) {
-            player.sendMessage("§cThe map name cannot be longer than 32 characters!");
-            return true;
-        }
+        try {
+            int amount = Integer.parseInt(amountStr);
+            if (amount <= 0) {
+                player.sendMessage("§cThe maximum number of teams must be greater than zero!");
+                return true;
+            }
+            if (amount > 16) {
+                player.sendMessage("§cThe maximum number of teams cannot exceed 16!");
+                return true;
+            }
 
-        // Set the name
-        mapSetup.getMapSetupManager().setName(uuid, name);
-        player.sendMessage("§aSuccessfully set the map name to: §e" + name);
-        player.sendMessage(mapSetup.getMapSetupManager().getCurrentStepInfo(uuid));
+            mapSetup.getMapSetupManager().setMaxTeams(uuid, amount);
+            player.sendMessage("§aSuccessfully set the maximum teams to: §e" + amount);
+            player.sendMessage(mapSetup.getMapSetupManager().getCurrentStepInfo(uuid));
+        } catch (NumberFormatException e) {
+            player.sendMessage("§cPlease enter a valid number for the maximum teams!");
+            player.sendMessage("§7Example: §e/mapsetup setMaxTeams 4");
+        }
         return true;
     }
 
     @Override
     public List<String> getSubCommandTabComplete(CommandSender sender, String[] args) {
-        return List.of("<name>");
+        if (args.length == 2) {
+            return List.of("2", "4", "8", "12", "16");
+        }
+        return List.of("<amount>");
     }
 }

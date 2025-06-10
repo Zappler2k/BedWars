@@ -19,17 +19,25 @@ public class CloseMapCommand extends SubCommand {
 
     @Override
     public boolean executeSubCommand(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
-        UUID uuid = player.getUniqueId();
-
-        if(mapSetup.getMapSetupManager().getGameMapSetup(uuid) == null) {
-            player.sendMessage("You have to start a Setup first!");
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("§cThis command can only be executed by players in-game!");
             return true;
         }
 
+        Player player = (Player) sender;
+        UUID uuid = player.getUniqueId();
+
+        // Check if player has started a setup
+        if (mapSetup.getMapSetupManager().getGameMapSetup(uuid) == null) {
+            player.sendMessage("§cYou need to start a map setup first! Use §e/mapsetup §cto begin.");
+            return true;
+        }
+
+        // Close the setup
         mapSetup.getMapSetupManager().getCurrentSetups().remove(uuid);
         mapSetup.getMapSetupManager().getCurrentStep().remove(uuid);
-        player.sendMessage("You have successfully closed the Setup!");
+        player.sendMessage("§aSuccessfully closed the map setup!");
+        player.sendMessage("§7You can start a new map setup using §e/mapsetup§7.");
         return true;
     }
 

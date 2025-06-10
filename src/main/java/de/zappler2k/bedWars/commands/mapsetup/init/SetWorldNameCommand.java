@@ -3,18 +3,20 @@ package de.zappler2k.bedWars.commands.mapsetup.init;
 import de.zappler2k.bedWars.command.SubCommand;
 import de.zappler2k.bedWars.commands.mapsetup.MapSetup;
 import de.zappler2k.bedWars.setup.map.MapSetupManager.SetupStep;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
-public class SetNameCommand extends SubCommand {
+public class SetWorldNameCommand extends SubCommand {
 
     private MapSetup mapSetup;
 
-    public SetNameCommand(String permission, MapSetup mapSetup) {
+    public SetWorldNameCommand(String permission, MapSetup mapSetup) {
         super(permission);
         this.mapSetup = mapSetup;
     }
@@ -37,8 +39,8 @@ public class SetNameCommand extends SubCommand {
 
         // Check if we're in the correct step
         SetupStep currentStep = mapSetup.getMapSetupManager().getCurrentStep(mapSetup.getMapSetupManager().getGameMapSetup(uuid));
-        if (currentStep != SetupStep.MAP_NAME) {
-            player.sendMessage("§cYou can only set the map name in the Map Name step!");
+        if (currentStep != SetupStep.WORLD_NAME) {
+            player.sendMessage("§cYou can only set the world name in the World Name step!");
             player.sendMessage("§eCurrent step: §c" + currentStep.getDisplayName());
             player.sendMessage(mapSetup.getMapSetupManager().getCurrentStepInfo(uuid));
             return true;
@@ -46,31 +48,47 @@ public class SetNameCommand extends SubCommand {
 
         // Validate arguments
         if (args.length != 2) {
-            player.sendMessage("§cUsage: §e/mapsetup setName <name>");
-            player.sendMessage("§7Example: §e/mapsetup setName Castle");
+            player.sendMessage("§cUsage: §e/mapsetup setWorld <worldname>");
+            player.sendMessage("§7Available worlds:");
+            for (World world : Bukkit.getWorlds()) {
+                player.sendMessage("§7- §e" + world.getName());
+            }
             return true;
         }
 
-        String name = args[1].trim();
-        if (name.isEmpty()) {
-            player.sendMessage("§cThe map name cannot be empty! Please provide a valid name.");
+        String worldName = args[1].trim();
+        if (worldName.isEmpty()) {
+            player.sendMessage("§cThe world name cannot be empty! Please provide a valid world name.");
             return true;
         }
 
-        if (name.length() > 32) {
-            player.sendMessage("§cThe map name cannot be longer than 32 characters!");
+        // Check if world exists
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            player.sendMessage("§cWorld '§e" + worldName + "§c' does not exist!");
+            player.sendMessage("§7Available worlds:");
+            for (World availableWorld : Bukkit.getWorlds()) {
+                player.sendMessage("§7- §e" + availableWorld.getName());
+            }
             return true;
         }
 
-        // Set the name
-        mapSetup.getMapSetupManager().setName(uuid, name);
-        player.sendMessage("§aSuccessfully set the map name to: §e" + name);
+        // Set the world name
+        mapSetup.getMapSetupManager().setWorldName(uuid, worldName);
+        player.sendMessage("§aSuccessfully set the world name to: §e" + worldName);
         player.sendMessage(mapSetup.getMapSetupManager().getCurrentStepInfo(uuid));
         return true;
     }
 
     @Override
     public List<String> getSubCommandTabComplete(CommandSender sender, String[] args) {
-        return List.of("<name>");
+        if (args.length == 2) {
+            List<String> worldNames = new ArrayList<>();
+            for (World world : Bukkit.getWorlds()) {
+                worldNames.add(world.getName());
+            }
+            return worldNames;
+        }
+        return List.of("<worldname>");
     }
 }

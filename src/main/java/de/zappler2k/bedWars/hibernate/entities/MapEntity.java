@@ -9,19 +9,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
+@Entity
+@Table(name = "gameMaps")
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-@Table(name = "gameMaps")
+@AllArgsConstructor
 public class MapEntity {
-
     @Id
     private String name;
-    @Column(nullable = false)
+    
+    @Column(columnDefinition = "LONGTEXT")
     private String config;
-    @Column(nullable = false)
+    
     private String variant;
-
 }
