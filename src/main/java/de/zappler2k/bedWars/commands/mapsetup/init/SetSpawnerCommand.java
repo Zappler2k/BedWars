@@ -8,7 +8,6 @@ import de.zappler2k.bedWars.setup.map.MapSetupManager.SetupStep;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -88,8 +87,8 @@ public class SetSpawnerCommand extends SubCommand {
     public List<String> getSubCommandTabComplete(CommandSender sender, String[] args) {
         if (args.length == 2) {
             return Arrays.stream(SpawnerType.values())
-                .map(Enum::name)
-                .toList();
+                    .map(Enum::name)
+                    .toList();
         }
         return List.of();
     }

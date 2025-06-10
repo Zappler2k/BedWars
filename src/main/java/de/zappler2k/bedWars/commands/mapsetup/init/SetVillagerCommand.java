@@ -103,8 +103,8 @@ public class SetVillagerCommand extends SubCommand {
     public List<String> getSubCommandTabComplete(CommandSender sender, String[] args) {
         if (args.length == 2) {
             return Arrays.stream(VillagerType.values())
-                .map(Enum::name)
-                .toList();
+                    .map(Enum::name)
+                    .toList();
         }
         return List.of();
     }

@@ -29,6 +29,7 @@ public class MapSetup extends MainCommand {
         registerSubCommand("setMaxPlayersPerTeam", new SetMaxPlayerPerTeamCommand("bedwars.admin.setup.map.maxplayersperteam", this));
         registerSubCommand("setSpawner", new SetSpawnerCommand("bedwars.admin.setup.map.setspawner", this));
         registerSubCommand("setVillager", new SetVillagerCommand("bedwars.admin.setup.map.setvillager", this));
+        registerSubCommand("setSpectatorSpawn", new SetSpectatorSpawnCommand("bedwars.admin.setup.map.setspectatorspawn", this));
     }
 
     @Override
@@ -59,7 +60,7 @@ public class MapSetup extends MainCommand {
     @Override
     public List<String> getTabComplete(CommandSender sender, String[] args) {
         List<String> completions = new ArrayList<>();
-        
+
         if (args.length == 1) {
             completions.addAll(getSubCommands().keySet());
         } else if (args.length == 2) {
@@ -68,7 +69,7 @@ public class MapSetup extends MainCommand {
                 completions.addAll(getSubCommands().get(subCommand).getSubCommandTabComplete(sender, args));
             }
         }
-        
+
         return completions;
     }
 }

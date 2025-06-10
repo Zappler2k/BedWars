@@ -58,8 +58,7 @@ public abstract class MainCommand implements CommandExecutor, TabCompleter {
                     })
                     .filter(name -> name.startsWith(prefix))
                     .collect(Collectors.toList());
-        }
-        else if (args.length > 1) {
+        } else if (args.length > 1) {
             String subName = args[0].toLowerCase(Locale.ROOT);
             SubCommand sub = subCommands.get(subName);
             if (sub != null && (sub.getPermission() == null || sender.hasPermission(sub.getPermission()))) {
@@ -80,6 +79,7 @@ public abstract class MainCommand implements CommandExecutor, TabCompleter {
         }
         subCommands.put(name.toLowerCase(Locale.ROOT), subCommand);
     }
+
     private boolean hasMainPermission(CommandSender sender) {
         return (permission == null || permission.isEmpty()) || sender.hasPermission(permission);
     }
@@ -93,5 +93,22 @@ public abstract class MainCommand implements CommandExecutor, TabCompleter {
     }
 
     public abstract boolean executeCommand(CommandSender sender, Command command, String label, String[] args);
+
     public abstract List<String> getTabComplete(CommandSender sender, String[] args);
+
+    protected boolean hasSubCommand(String name) {
+        return subCommands.containsKey(name.toLowerCase());
+    }
+
+    protected boolean executeSubCommand(String name, CommandSender sender, String[] args) {
+        SubCommand subCommand = subCommands.get(name.toLowerCase());
+        if (subCommand != null) {
+            return subCommand.executeSubCommand(sender, args);
+        }
+        return false;
+    }
+
+    protected List<String> getSubCommandNames() {
+        return new ArrayList<>(subCommands.keySet());
+    }
 }

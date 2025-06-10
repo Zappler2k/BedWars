@@ -1,7 +1,5 @@
 package de.zappler2k.bedWars.spigot;
 
-import de.zappler2k.bedWars.spigot.scoreboard.ScoreboardManager;
-import de.zappler2k.bedWars.spigot.tablist.TablistManager;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,7 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 public class SpigotManager {
@@ -26,14 +26,14 @@ public class SpigotManager {
     }
 
     public void addScoreboardToPlayer(UUID uuid) {
-        if(getSpigotPlayer(uuid) != null) {
+        if (getSpigotPlayer(uuid) != null) {
             return;
         }
         spigotPlayers.add(new SpigotPlayer(uuid, Bukkit.getScoreboardManager().getNewScoreboard()));
     }
 
     public void removeScoreboardFromPlayer(UUID uuid) {
-        if(getSpigotPlayer(uuid) == null) {
+        if (getSpigotPlayer(uuid) == null) {
             return;
         }
         spigotPlayers.remove(getSpigotPlayer(uuid));
@@ -54,6 +54,7 @@ public class SpigotManager {
     public void playerJoinEvent(PlayerJoinEvent event) {
         addScoreboardToPlayer(event.getPlayer().getUniqueId());
     }
+
     public void playerQuitEvent(PlayerQuitEvent event) {
         removeScoreboardFromPlayer(event.getPlayer().getUniqueId());
     }

@@ -21,7 +21,7 @@ public class ScoreboardManager {
         this.spigotPlayer = spigotPlayer;
         this.scoreboard = spigotPlayer.getScoreboard();
         this.objective = scoreboard.getObjective("dummy");
-        if(objective == null) {
+        if (objective == null) {
             this.objective = scoreboard.registerNewObjective("dummy", "scoreboard");
         }
 
@@ -39,7 +39,7 @@ public class ScoreboardManager {
 
     public void addTeam(String name, String entry, Component prefix, Component suffix) {
         Team team = getTeam(name);
-        if(team == null) {
+        if (team == null) {
             team = scoreboard.registerNewTeam(name);
         }
         team.addEntry(entry);
@@ -53,16 +53,17 @@ public class ScoreboardManager {
 
     public void updateTeam(String name, Component prefix, Component suffix) {
         Team team = getTeam(name);
-        if(team == null) {
+        if (team == null) {
             Bukkit.getLogger().log(Level.INFO, "There was no team with the name " + name + "created");
             return;
         }
         team.prefix(prefix);
         team.suffix(suffix);
     }
+
     public void removeTeam(String name) {
         Team team = getTeam(name);
-        if(team == null) {
+        if (team == null) {
             return;
         }
     }

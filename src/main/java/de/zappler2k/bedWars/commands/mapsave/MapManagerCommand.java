@@ -48,8 +48,8 @@ public class MapManagerCommand extends MainCommand {
         if (args.length == 1) {
             String input = args[0].toLowerCase();
             return getSubCommands().keySet().stream()
-                .filter(cmd -> cmd.toLowerCase().startsWith(input))
-                .collect(Collectors.toList());
+                    .filter(cmd -> cmd.toLowerCase().startsWith(input))
+                    .collect(Collectors.toList());
         }
         return new ArrayList<>();
     }
@@ -98,9 +98,9 @@ public class MapManagerCommand extends MainCommand {
             if (args.length == 2) {
                 String input = args[1].toLowerCase();
                 return mapManager.getLoadedMaps().stream()
-                    .map(map -> map.getName())
-                    .filter(name -> name.toLowerCase().startsWith(input))
-                    .collect(Collectors.toList());
+                        .map(map -> map.getName())
+                        .filter(name -> name.toLowerCase().startsWith(input))
+                        .collect(Collectors.toList());
             }
             return new ArrayList<>();
         }
@@ -132,14 +132,15 @@ public class MapManagerCommand extends MainCommand {
             if (args.length == 2) {
                 String input = args[1].toLowerCase();
                 return mapManager.getMapEntityManager().getGameMapSaveByVariant(plugin.getConfig().getString("variant"))
-                    .stream()
-                    .map(map -> map.getName())
-                    .filter(name -> name.toLowerCase().startsWith(input))
-                    .collect(Collectors.toList());
+                        .stream()
+                        .map(map -> map.getName())
+                        .filter(name -> name.toLowerCase().startsWith(input))
+                        .collect(Collectors.toList());
             }
             return new ArrayList<>();
         }
     }
+
     private static class ImportAndSaveByVariantCommand extends SubCommand {
         private final MapManager mapManager;
         private final BedWars plugin;
@@ -166,9 +167,9 @@ public class MapManagerCommand extends MainCommand {
             if (args.length == 2) {
                 String input = args[1].toLowerCase();
                 return mapManager.getMapEntityManager().getAllVariants()
-                    .stream()
-                    .filter(variant -> variant.toLowerCase().startsWith(input))
-                    .collect(Collectors.toList());
+                        .stream()
+                        .filter(variant -> variant.toLowerCase().startsWith(input))
+                        .collect(Collectors.toList());
             }
             return new ArrayList<>();
         }

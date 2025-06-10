@@ -9,11 +9,11 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.UUID;
 
-public class SetNameCommand extends SubCommand {
+public class SetSpectatorSpawnCommand extends SubCommand {
 
     private MapSetup mapSetup;
 
-    public SetNameCommand(String permission, MapSetup mapSetup) {
+    public SetSpectatorSpawnCommand(String permission, MapSetup mapSetup) {
         super(permission);
         this.mapSetup = mapSetup;
     }
@@ -36,40 +36,21 @@ public class SetNameCommand extends SubCommand {
 
         // Check if we're in the correct step
         SetupStep currentStep = mapSetup.getMapSetupManager().getCurrentStep(mapSetup.getMapSetupManager().getGameMapSetup(uuid));
-        if (currentStep != SetupStep.MAP_NAME) {
-            player.sendMessage("§cYou can only set the map name in the Map Name step!");
+        if (currentStep != SetupStep.SPECTATOR_SPAWN_CONFIGURATION) {
+            player.sendMessage("§cYou can only set the spectator spawn in the Spectator Spawn Configuration step!");
             player.sendMessage("§eCurrent step: §c" + currentStep.getDisplayName());
             player.sendMessage(mapSetup.getMapSetupManager().getCurrentStepInfo(uuid));
             return true;
         }
 
-        // Validate arguments
-        if (args.length != 2) {
-            player.sendMessage("§cUsage: §e/mapsetup setName <name>");
-            player.sendMessage("§7Example: §e/mapsetup setName Castle");
-            return true;
-        }
-
-        String name = args[1].trim();
-        if (name.isEmpty()) {
-            player.sendMessage("§cThe map name cannot be empty! Please provide a valid name.");
-            return true;
-        }
-
-        if (name.length() > 32) {
-            player.sendMessage("§cThe map name cannot be longer than 32 characters!");
-            return true;
-        }
-
-        // Set the name
-        mapSetup.getMapSetupManager().setName(uuid, name);
-        player.sendMessage("§aSuccessfully set the map name to: §e" + name);
+        mapSetup.getMapSetupManager().setSpectatorLocation(uuid, player.getLocation());
+        player.sendMessage("§aSuccessfully set the spectator spawn location!");
         player.sendMessage(mapSetup.getMapSetupManager().getCurrentStepInfo(uuid));
         return true;
     }
 
     @Override
     public List<String> getSubCommandTabComplete(CommandSender sender, String[] args) {
-        return List.of("<name>");
+        return List.of();
     }
-}
+} 

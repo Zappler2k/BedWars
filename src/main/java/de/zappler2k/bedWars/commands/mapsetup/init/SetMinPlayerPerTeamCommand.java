@@ -2,8 +2,8 @@ package de.zappler2k.bedWars.commands.mapsetup.init;
 
 import de.zappler2k.bedWars.command.SubCommand;
 import de.zappler2k.bedWars.commands.mapsetup.MapSetup;
-import de.zappler2k.bedWars.setup.map.MapSetupManager.SetupStep;
 import de.zappler2k.bedWars.map.objects.GameMap;
+import de.zappler2k.bedWars.setup.map.MapSetupManager.SetupStep;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -89,7 +89,7 @@ public class SetMinPlayerPerTeamCommand extends SubCommand {
         if (args.length == 2 && sender instanceof Player) {
             Player player = (Player) sender;
             UUID uuid = player.getUniqueId();
-            
+
             // Get the current map setup
             GameMap gameMap = mapSetup.getMapSetupManager().getGameMapSetup(uuid);
             if (gameMap == null) {

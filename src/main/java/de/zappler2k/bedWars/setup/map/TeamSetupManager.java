@@ -237,7 +237,7 @@ public class TeamSetupManager {
             gameMap.setTeams(new ArrayList<>());
         }
         gameMap.getTeams().add(team);
-        
+
         // Clean up the setup
         currentTeamSetups.remove(uuid);
         currentStep.remove(uuid);
@@ -329,8 +329,13 @@ public class TeamSetupManager {
             this.displayName = displayName;
         }
 
-        public int getOrder() { return order; }
-        public String getDisplayName() { return displayName; }
+        public int getOrder() {
+            return order;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
 
         public TeamSetupStep getNext() {
             TeamSetupStep[] steps = values();

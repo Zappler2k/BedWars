@@ -3,6 +3,7 @@
 # Plugin Settings
 prefix: &4BedWars
 setupMode: false
+useLocalData: false
 variant: 4x4  # The default variant for maps (e.g., 4x4, 2x2, 3x3)
 
 # Messages

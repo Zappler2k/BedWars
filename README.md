@@ -57,8 +57,8 @@
         └── main
 ```
 
-
 ### 📂 Project Index
+
 <details open>
 	<summary><b><code>BEDWARS/</code></b></summary>
 	<details> <!-- __root__ Submodule -->
@@ -280,6 +280,7 @@
 </details>
 
 ---
+
 ## 🚀 Getting Started
 
 ### ☑️ Prerequisites
@@ -289,7 +290,6 @@ Before getting started with BedWars, ensure your runtime environment meets the f
 - **Programming Language:** Java
 - **Package Manager:** Gradle
 
-
 ### ⚙️ Installation
 
 Install BedWars using one of the following methods:
@@ -297,46 +297,48 @@ Install BedWars using one of the following methods:
 **Build from source:**
 
 1. Clone the BedWars repository:
+
 ```sh
 ❯ git clone https://github.com/Zappler2k/BedWars
 ```
 
 2. Navigate to the project directory:
+
 ```sh
 ❯ cd BedWars
 ```
 
 3. Install the project dependencies:
 
-
-**Using `gradle`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Gradle-02303A.svg?style={badge_style}&logo=gradle&logoColor=white" />](https://gradle.org/)
+**Using `gradle`**
+&nbsp; [<img align="center" src="https://img.shields.io/badge/Gradle-02303A.svg?style={badge_style}&logo=gradle&logoColor=white" />](https://gradle.org/)
 
 ```sh
 ❯ gradle build
 ```
 
-
-
-
 ### 🤖 Usage
+
 Run BedWars using the following command:
-**Using `gradle`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Gradle-02303A.svg?style={badge_style}&logo=gradle&logoColor=white" />](https://gradle.org/)
+**Using `gradle`**
+&nbsp; [<img align="center" src="https://img.shields.io/badge/Gradle-02303A.svg?style={badge_style}&logo=gradle&logoColor=white" />](https://gradle.org/)
 
 ```sh
 ❯ gradle run
 ```
 
-
 ### 🧪 Testing
+
 Run the test suite using the following command:
-**Using `gradle`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Gradle-02303A.svg?style={badge_style}&logo=gradle&logoColor=white" />](https://gradle.org/)
+**Using `gradle`**
+&nbsp; [<img align="center" src="https://img.shields.io/badge/Gradle-02303A.svg?style={badge_style}&logo=gradle&logoColor=white" />](https://gradle.org/)
 
 ```sh
 ❯ gradle test
 ```
 
-
 ---
+
 ## 📌 Project Roadmap
 
 - [X] **`Task 1`**: <strike>Implement feature one.</strike>
@@ -347,9 +349,12 @@ Run the test suite using the following command:
 
 ## 🔰 Contributing
 
-- **💬 [Join the Discussions](https://github.com/Zappler2k/BedWars/discussions)**: Share your insights, provide feedback, or ask questions.
-- **🐛 [Report Issues](https://github.com/Zappler2k/BedWars/issues)**: Submit bugs found or log feature requests for the `BedWars` project.
-- **💡 [Submit Pull Requests](https://github.com/Zappler2k/BedWars/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
+- **💬 [Join the Discussions](https://github.com/Zappler2k/BedWars/discussions)**: Share your insights, provide feedback,
+  or ask questions.
+- **🐛 [Report Issues](https://github.com/Zappler2k/BedWars/issues)**: Submit bugs found or log feature requests for the
+  `BedWars` project.
+- **💡 [Submit Pull Requests](https://github.com/Zappler2k/BedWars/blob/main/CONTRIBUTING.md)**: Review open PRs, and
+  submit your own PRs.
 
 <details closed>
 <summary>Contributing Guidelines</summary>
@@ -372,8 +377,11 @@ Run the test suite using the following command:
    ```sh
    git push origin new-feature-x
    ```
-7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
-8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
+7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and
+   their motivations.
+8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your
+   contribution!
+
 </details>
 
 <details closed>
@@ -390,7 +398,8 @@ Run the test suite using the following command:
 
 ## 🎗 License
 
-This project is protected under the [SELECT-A-LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
+This project is protected under the [SELECT-A-LICENSE](https://choosealicense.com/licenses) License. For more details,
+refer to the [LICENSE](https://choosealicense.com/licenses/) file.
 
 ---
 

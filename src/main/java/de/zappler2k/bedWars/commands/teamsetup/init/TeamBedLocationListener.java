@@ -19,7 +19,7 @@ public class TeamBedLocationListener implements Listener {
     @EventHandler
     public void onBedLocationClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        
+
         // Check if it's a left click
         if (event.getAction() != Action.LEFT_CLICK_BLOCK) {
             return;
@@ -32,9 +32,9 @@ public class TeamBedLocationListener implements Listener {
 
         // Check if we're in the correct step
         TeamSetupStep currentStep = teamSetup.getTeamSetupManager().getCurrentStep(
-            teamSetup.getTeamSetupManager().getCurrentTeamSetup(player.getUniqueId())
+                teamSetup.getTeamSetupManager().getCurrentTeamSetup(player.getUniqueId())
         );
-        
+
         if (currentStep != TeamSetupStep.UPPER_BED_LOCATION && currentStep != TeamSetupStep.LOWER_BED_LOCATION) {
             return;
         }
@@ -49,7 +49,7 @@ public class TeamBedLocationListener implements Listener {
             teamSetup.getTeamSetupManager().setLowerBedLocation(player.getUniqueId(), event.getClickedBlock().getLocation());
             player.sendMessage("§aYou have successfully set the lower bed location!");
         }
-        
+
         player.sendMessage(teamSetup.getTeamSetupManager().getCurrentStepInfo(player.getUniqueId()));
     }
 } 

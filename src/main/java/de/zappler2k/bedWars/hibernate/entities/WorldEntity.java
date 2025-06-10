@@ -10,16 +10,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "gameMaps")
+@Table(name = "gameWorlds")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MapEntity {
-    @Id
-    private String name;
-    @Column(columnDefinition = "LONGTEXT")
-    private String config;
-    private String variant;
+public class WorldEntity {
 
+    @Id
+    private String mapName;
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] worldData;
+    @Column(name = "created_at")
+    private java.time.LocalDateTime createdAt;
+    @Column(name = "last_modified")
+    private java.time.LocalDateTime lastModified;
 }

@@ -70,5 +70,6 @@ public abstract class SubCommand {
     }
 
     public abstract boolean executeSubCommand(CommandSender sender, String[] args);
+
     public abstract List<String> getSubCommandTabComplete(CommandSender sender, String[] args);
 }

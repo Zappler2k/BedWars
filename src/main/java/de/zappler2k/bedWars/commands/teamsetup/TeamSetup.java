@@ -57,7 +57,7 @@ public class TeamSetup extends MainCommand {
     @Override
     public List<String> getTabComplete(CommandSender sender, String[] args) {
         List<String> completions = new ArrayList<>();
-        
+
         if (args.length == 1) {
             completions.addAll(getSubCommands().keySet());
         } else if (args.length == 2) {
@@ -66,7 +66,7 @@ public class TeamSetup extends MainCommand {
                 completions.addAll(getSubCommands().get(subCommand).getSubCommandTabComplete(sender, args));
             }
         }
-        
+
         return completions;
     }
 }

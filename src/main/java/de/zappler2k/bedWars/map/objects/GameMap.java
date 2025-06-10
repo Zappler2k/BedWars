@@ -2,8 +2,8 @@ package de.zappler2k.bedWars.map.objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,8 @@ public class GameMap {
     private Integer maxTeams;
     private Integer maxPlayersPerTeam;
     private Integer minPlayersPerTeam;
-    private String wordName;
+    private String worldName;
+    private Location spectatorLocation;
     private List<Villager> villagers;
     private List<Team> teams;
     private List<Spawner> spawners;

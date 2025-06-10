@@ -33,10 +33,10 @@ public class YamlManager {
 
     @SneakyThrows
     private void copyFile(String resourceFile, File finalFile) {
-        if(!finalFile.getParentFile().exists()) {
+        if (!finalFile.getParentFile().exists()) {
             finalFile.getParentFile().mkdirs();
         }
-        if(!finalFile.exists()) {
+        if (!finalFile.exists()) {
             Files.copy(this.getClass().getResourceAsStream("/" + resourceFile), finalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             finalFile.createNewFile();
         }

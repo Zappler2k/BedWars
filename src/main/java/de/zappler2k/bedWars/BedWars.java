@@ -2,42 +2,31 @@ package de.zappler2k.bedWars;
 
 
 import de.zappler2k.bedWars.command.CommandManager;
+import de.zappler2k.bedWars.commands.lobby.LobbyCommand;
 import de.zappler2k.bedWars.commands.mapsave.MapManagerCommand;
 import de.zappler2k.bedWars.commands.mapsetup.MapSetup;
 import de.zappler2k.bedWars.commands.teamsetup.TeamSetup;
 import de.zappler2k.bedWars.commands.teamsetup.init.TeamBedLocationListener;
+import de.zappler2k.bedWars.game.GameManager;
 import de.zappler2k.bedWars.hibernate.managers.MapEntityManager;
 import de.zappler2k.bedWars.hibernate.managers.StatsPlayerEntityManager;
-import de.zappler2k.bedWars.json.JsonManager;
 import de.zappler2k.bedWars.managers.MapManager;
-import de.zappler2k.bedWars.map.objects.GameMap;
+import de.zappler2k.bedWars.managers.world.WorldManager;
+import de.zappler2k.bedWars.setup.map.LobbySetupManager;
 import de.zappler2k.bedWars.setup.map.MapSetupManager;
 import de.zappler2k.bedWars.setup.map.TeamSetupManager;
 import de.zappler2k.bedWars.spigot.SpigotManager;
-import de.zappler2k.bedWars.spigot.SpigotPlayer;
 import de.zappler2k.bedWars.yml.YamlManager;
 import jakarta.persistence.Entity;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.C;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.reflections.Reflections;
 
-import java.awt.*;
 import java.io.File;
-import java.util.Random;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,8 +61,8 @@ public final class BedWars extends JavaPlugin {
         MapEntityManager mapEntityManager = new MapEntityManager(sessionFactory);
         // General
 
-
-        MapManager mapManager = new MapManager(this, mapEntityManager, yamConfigurationConfig);
+        WorldManager worldManager = new WorldManager(sessionFactory);
+        MapManager mapManager = new MapManager(this, mapEntityManager, yamConfigurationConfig, worldManager);
         mapManager.loadAllConfigs();
         //
 
@@ -100,12 +89,20 @@ public final class BedWars extends JavaPlugin {
             return;
         }
 
-        logger.log(Level.INFO, mapManager.importConfigsByVariantFromSQL());
-        SpigotManager spigotManager = new SpigotManager();
+        if(!yamConfigurationConfig.getBoolean("useLocalData")) {
+            logger.log(Level.INFO, mapManager.importConfigsByVariantFromSQL());
+        } else {
+            logger.log(Level.INFO, mapManager.loadConfigsByVariant());
+        }
 
+        // Initialize LobbySetupManager and register LobbyCommand
+        LobbySetupManager lobbySetupManager = new LobbySetupManager(this);
+        commandManager.registerCommand("lobbymanager", new LobbyCommand(this, lobbySetupManager));
+
+        SpigotManager spigotManager = new SpigotManager();
+        GameManager gameManager = new GameManager(this);
         // JSONManager
 
-        JsonManager jsonManager = new JsonManager(logger);
 
     }
 
@@ -143,6 +140,5 @@ public final class BedWars extends JavaPlugin {
             logger.log(Level.SEVERE, "Fehler beim Initialisieren von Hibernate", e);
         }
         return null;
-
     }
 }

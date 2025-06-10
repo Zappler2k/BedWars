@@ -2,15 +2,15 @@ package de.zappler2k.bedWars.hibernate.managers;
 
 import de.zappler2k.bedWars.hibernate.entities.StatsPlayerEntity;
 import lombok.Getter;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Getter
 public class StatsPlayerEntityManager {
@@ -33,7 +33,7 @@ public class StatsPlayerEntityManager {
 
         StatsPlayerEntity statsPlayerEntity = session.get(StatsPlayerEntity.class, uuid);
 
-        if(statsPlayerEntity == null) {
+        if (statsPlayerEntity == null) {
             statsPlayerEntity = new StatsPlayerEntity();
             statsPlayerEntity.setUuid(uuid);
             statsPlayerEntity.setKills(0);
@@ -48,7 +48,7 @@ public class StatsPlayerEntityManager {
         transaction.commit();
         session.close();
 
-        if(!statsPlayers.containsKey(uuid)) {
+        if (!statsPlayers.containsKey(uuid)) {
             statsPlayers.put(uuid, statsPlayerEntity);
         } else {
         }

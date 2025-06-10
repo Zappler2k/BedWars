@@ -57,15 +57,15 @@ public class SetTeamSpawnerCommand extends SubCommand {
 
         try {
             SpawnerType type = SpawnerType.valueOf(args[1].toUpperCase());
-            
+
             // Set the team spawner
             Spawner spawner = new Spawner(type, player.getLocation());
             teamSetup.getTeamSetupManager().addTeamSpawner(uuid, spawner);
-            
+
             // Check if this is the first team spawner
             boolean hasTeamSpawner = teamSetup.getTeamSetupManager().getTeamSpawners(uuid).stream()
                     .anyMatch(s -> s.getSpawnerType() == SpawnerType.TEAMSPAWNER);
-            
+
             if (type == SpawnerType.TEAMSPAWNER) {
                 if (!hasTeamSpawner) {
                     player.sendMessage("§aSuccessfully set first team spawner!");
@@ -79,7 +79,7 @@ public class SetTeamSpawnerCommand extends SubCommand {
                     player.sendMessage("§eNote: You still need to set at least one TEAMSPAWNER before finishing the setup!");
                 }
             }
-            
+
             player.sendMessage("§7Current step: §e" + teamSetup.getTeamSetupManager().getCurrentStepInfo(uuid));
             return true;
         } catch (IllegalArgumentException e) {

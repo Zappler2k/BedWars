@@ -4,14 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.zappler2k.bedWars.json.init.LocationTypeAdapter;
 import de.zappler2k.bedWars.map.objects.GameMap;
-import de.zappler2k.bedWars.map.objects.Team;
 import de.zappler2k.bedWars.map.objects.Spawner;
+import de.zappler2k.bedWars.map.objects.Team;
 import de.zappler2k.bedWars.map.objects.Villager;
 import de.zappler2k.bedWars.map.objects.init.SpawnerType;
 import de.zappler2k.bedWars.map.objects.init.VillagerType;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
@@ -62,7 +61,11 @@ public class MapSetupManager {
     }
 
     public void setWorldName(UUID uuid, String name) {
-        getGameMapSetup(uuid).setWordName(name);
+        getGameMapSetup(uuid).setWorldName(name);
+    }
+
+    public void setSpectatorLocation(UUID uuid, Location location) {
+        getGameMapSetup(uuid).setSpectatorLocation(location);
     }
 
     // Spawner management methods
@@ -149,6 +152,7 @@ public class MapSetupManager {
         hasErrors |= validateSpawners(gameMap, stringBuilder);
         hasErrors |= validateVillagers(gameMap, stringBuilder);
         hasErrors |= validateTeams(gameMap, stringBuilder);
+        hasErrors |= validateSpectatorSpawn(gameMap, stringBuilder);
 
         if (hasErrors) {
             return "There are some errors preventing the map setup from being completed:\n" + stringBuilder.toString();
@@ -164,10 +168,10 @@ public class MapSetupManager {
             // Save the map configuration
             File file = new File(configDir, gameMap.getName() + ".json");
             Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Location.class, new LocationTypeAdapter())
-                .create();
-            
+                    .setPrettyPrinting()
+                    .registerTypeAdapter(Location.class, new LocationTypeAdapter())
+                    .create();
+
             try (FileWriter fileWriter = new FileWriter(file)) {
                 fileWriter.write(gson.toJson(gameMap));
                 fileWriter.flush();
@@ -216,7 +220,7 @@ public class MapSetupManager {
     }
 
     private boolean validateWorldName(GameMap gameMap, StringBuilder stringBuilder) {
-        if (gameMap.getWordName() == null) {
+        if (gameMap.getWorldName() == null) {
             stringBuilder.append("§cThe world name has not been set. Use §e/mapsetup setWorld <name> §cto set it.\n");
             return true;
         }
@@ -332,6 +336,14 @@ public class MapSetupManager {
         return hasErrors;
     }
 
+    private boolean validateSpectatorSpawn(GameMap gameMap, StringBuilder stringBuilder) {
+        if (gameMap.getSpectatorLocation() == null) {
+            stringBuilder.append("§cThe spectator spawn location has not been set. Use §e/mapsetup setSpectatorSpawn §cto set it.\n");
+            return true;
+        }
+        return false;
+    }
+
     private boolean checkMapNameAlreadySet(GameMap gameMap, StringBuilder stringBuilder) {
         if (gameMap.getName() != null) {
             stringBuilder.append("The map name is already set and cannot be changed.\n");
@@ -365,7 +377,7 @@ public class MapSetupManager {
     }
 
     private boolean checkWorldNameAlreadySet(GameMap gameMap, StringBuilder stringBuilder) {
-        if (gameMap.getWordName() != null) {
+        if (gameMap.getWorldName() != null) {
             stringBuilder.append("The world name is already set and cannot be changed.\n");
             return true;
         }
@@ -429,10 +441,11 @@ public class MapSetupManager {
         MAX_TEAMS(3, "Maximum Teams"),
         MIN_PLAYERS_PER_TEAM(4, "Minimum Players per Team"),
         MAX_PLAYERS_PER_TEAM(5, "Maximum Players per Team"),
-        TEAM_CONFIGURATION(6, "Team Configuration"),
-        SPAWNER_CONFIGURATION(7, "Spawner Configuration"),
-        VILLAGER_CONFIGURATION(8, "Villager Configuration"),
-        SETUP_COMPLETE(9, "Setup Complete");
+        SPECTATOR_SPAWN_CONFIGURATION(6, "Spectator Spawn Configuration"),
+        TEAM_CONFIGURATION(7, "Team Configuration"),
+        SPAWNER_CONFIGURATION(8, "Spawner Configuration"),
+        VILLAGER_CONFIGURATION(9, "Villager Configuration"),
+        SETUP_COMPLETE(10, "Setup Complete");
 
         private final int order;
         private final String displayName;
@@ -442,8 +455,13 @@ public class MapSetupManager {
             this.displayName = displayName;
         }
 
-        public int getOrder() { return order; }
-        public String getDisplayName() { return displayName; }
+        public int getOrder() {
+            return order;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
 
         public SetupStep getNext() {
             SetupStep[] steps = values();
@@ -460,7 +478,7 @@ public class MapSetupManager {
             return SetupStep.MAP_NAME;
         }
 
-        if (gameMap.getWordName() == null) {
+        if (gameMap.getWorldName() == null) {
             return SetupStep.WORLD_NAME;
         }
 
@@ -478,6 +496,10 @@ public class MapSetupManager {
 
         if (gameMap.getMinPlayersPerTeam() > gameMap.getMaxPlayersPerTeam()) {
             return SetupStep.MIN_PLAYERS_PER_TEAM;
+        }
+
+        if (gameMap.getSpectatorLocation() == null) {
+            return SetupStep.SPECTATOR_SPAWN_CONFIGURATION;
         }
 
         if (gameMap.getTeams() == null || gameMap.getTeams().size() < gameMap.getMaxTeams()) {
@@ -552,11 +574,13 @@ public class MapSetupManager {
                 return "§eCurrent step: §aSet Minimum Players per Team\n§eUse: §a/mapsetup setMinPlayersPerTeam <number>";
             case TEAM_CONFIGURATION:
                 return "§eCurrent step: §aConfigure Teams\n§eUse: §a/mapsetup team";
+            case SPECTATOR_SPAWN_CONFIGURATION:
+                return "§eCurrent step: §aSet Spectator Spawn Location\n§eUse: §a/mapsetup setSpectatorSpawn";
             case SPAWNER_CONFIGURATION:
                 StringBuilder spawnerMessage = new StringBuilder();
                 spawnerMessage.append("§eCurrent step: §aConfigure Resource Spawners\n");
                 spawnerMessage.append("§cYou must set at least one spawner of each type:\n");
-                
+
                 // Check which spawners are missing
                 boolean hasIronSpawner = false;
                 boolean hasGoldSpawner = false;
@@ -580,7 +604,7 @@ public class MapSetupManager {
             case VILLAGER_CONFIGURATION:
                 StringBuilder villagerMessage = new StringBuilder();
                 villagerMessage.append("§eCurrent step: §aConfigure Shops and Upgrade Managers\n");
-                
+
                 // Check which villagers are missing
                 boolean hasShop = false;
                 boolean hasUpgrade = false;
@@ -616,9 +640,9 @@ public class MapSetupManager {
         if (gameMap == null) return false;
 
         // Check if all required steps are completed
-        if (gameMap.getName() == null || gameMap.getWordName() == null || 
-            gameMap.getMaxTeams() == null || gameMap.getMaxPlayersPerTeam() == null || 
-            gameMap.getMinPlayersPerTeam() == null) {
+        if (gameMap.getName() == null || gameMap.getWorldName() == null ||
+                gameMap.getMaxTeams() == null || gameMap.getMaxPlayersPerTeam() == null ||
+                gameMap.getMinPlayersPerTeam() == null || gameMap.getSpectatorLocation() == null) {
             return false;
         }
 

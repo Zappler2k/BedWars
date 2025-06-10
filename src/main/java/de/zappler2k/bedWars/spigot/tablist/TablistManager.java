@@ -7,8 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.awt.*;
-
 public class TablistManager {
 
     private Scoreboard scoreboard;
@@ -26,9 +24,10 @@ public class TablistManager {
         team.prefix(prefix);
         team.suffix(suffix);
     }
+
     public void updateTeamFromPlayer(Player player, NamedTextColor color, Component prefix, Component suffix) {
         Team team = scoreboard.getTeam(player.getUniqueId() + spigotPlayer.getUuid().toString());
-        if(team == null) {
+        if (team == null) {
             addTeamToPlayer(player, color, prefix, suffix);
             return;
         }

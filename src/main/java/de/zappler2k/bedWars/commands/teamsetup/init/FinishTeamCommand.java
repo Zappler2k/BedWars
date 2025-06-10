@@ -46,36 +46,36 @@ public class FinishTeamCommand extends SubCommand {
         // Validate team setup requirements
         StringBuilder validationErrors = new StringBuilder();
         var currentTeam = teamSetup.getTeamSetupManager().getCurrentTeamSetup(uuid);
-        
+
         // Check if team has a name
         if (currentTeam.getName() == null || currentTeam.getName().isEmpty()) {
             validationErrors.append("§c- Missing team name (Use §e/teamsetup setName <name>§c)\n");
         }
-        
+
         // Check if team has a color
         if (currentTeam.getColor() == null) {
             validationErrors.append("§c- Missing team color (Use §e/teamsetup setColor <color>§c)\n");
         }
-        
+
         // Check if team has a spawn location
         if (currentTeam.getSpawnLoaction() == null) {
             validationErrors.append("§c- Missing team spawn location (Use §e/teamsetup setSpawn§c)\n");
         }
-        
+
         // Check if team has bed locations
         if (currentTeam.getUpperBedLocation() == null || currentTeam.getLowerBedLocation() == null) {
             validationErrors.append("§c- Missing team bed locations (Use §e/teamsetup setBed§c)\n");
         }
-        
+
         // Check if team has region points
         if (currentTeam.getRegion_1() == null || currentTeam.getRegion_2() == null) {
             validationErrors.append("§c- Missing team region points (Use §e/teamsetup setRegion <1|2>§c)\n");
         }
-        
+
         // Check if team has at least one team spawner
-        boolean hasTeamSpawner = currentTeam.getSpawners() != null && 
-            currentTeam.getSpawners().stream()
-                .anyMatch(s -> s.getSpawnerType() == SpawnerType.TEAMSPAWNER);
+        boolean hasTeamSpawner = currentTeam.getSpawners() != null &&
+                currentTeam.getSpawners().stream()
+                        .anyMatch(s -> s.getSpawnerType() == SpawnerType.TEAMSPAWNER);
         if (!hasTeamSpawner) {
             validationErrors.append("§c- Missing team spawner (Use §e/teamsetup setSpawner TEAMSPAWNER§c)\n");
         }
@@ -99,11 +99,11 @@ public class FinishTeamCommand extends SubCommand {
             player.sendMessage("§7- Name: §e" + currentTeam.getName());
             player.sendMessage("§7- Color: §e" + currentTeam.getColor().toString());
             player.sendMessage("§7- Spawners: §e" + (currentTeam.getSpawners() != null ? currentTeam.getSpawners().size() : 0) + " §7placed");
-            
+
             // Add overall progress information
             String progress = teamSetup.getTeamSetupManager().getOverallProgress(uuid);
             player.sendMessage("\n§7" + progress);
-            
+
             player.sendMessage("\n§7You can now start setting up another team or finish the map setup.");
         }
         return true;

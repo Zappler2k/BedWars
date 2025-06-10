@@ -51,15 +51,15 @@ public class FinishMapCommand extends SubCommand {
 
         // Validate all requirements before finishing
         StringBuilder validationErrors = new StringBuilder();
-        
+
         // Check map name and world
         if (gameMap.getName() == null || gameMap.getName().isEmpty()) {
             validationErrors.append("§c- Missing map name (Use §e/mapsetup setName <name>§c)\n");
         }
-        if (gameMap.getWordName() == null || gameMap.getWordName().isEmpty()) {
+        if (gameMap.getWorldName() == null || gameMap.getWorldName().isEmpty()) {
             validationErrors.append("§c- Missing world name (Use §e/mapsetup setWorldName <world>§c)\n");
         }
-        
+
         // Check team requirements
         if (gameMap.getTeams() == null || gameMap.getTeams().isEmpty()) {
             validationErrors.append("§c- No teams have been set up yet (Use §e/teamsetup start§c)\n");
@@ -82,18 +82,18 @@ public class FinishMapCommand extends SubCommand {
                 if (team.getRegion_1() == null || team.getRegion_2() == null) {
                     validationErrors.append("§c- Team " + (i + 1) + " is missing region points\n");
                 }
-                if (team.getSpawners() == null || team.getSpawners().isEmpty() || 
-                    !team.getSpawners().stream().anyMatch(s -> s.getSpawnerType() == SpawnerType.TEAMSPAWNER)) {
+                if (team.getSpawners() == null || team.getSpawners().isEmpty() ||
+                        !team.getSpawners().stream().anyMatch(s -> s.getSpawnerType() == SpawnerType.TEAMSPAWNER)) {
                     validationErrors.append("§c- Team " + (i + 1) + " is missing a team spawner\n");
                 }
             }
         }
-        
+
         // Check spawners
         boolean hasIronSpawner = false;
         boolean hasGoldSpawner = false;
         boolean hasDiamondSpawner = false;
-        
+
         if (gameMap.getSpawners() != null) {
             for (Spawner spawner : gameMap.getSpawners()) {
                 if (spawner.getSpawnerType() == SpawnerType.IRON) hasIronSpawner = true;
@@ -101,10 +101,11 @@ public class FinishMapCommand extends SubCommand {
                 else if (spawner.getSpawnerType() == SpawnerType.DIAMOND) hasDiamondSpawner = true;
             }
         }
-        
+
         if (!hasIronSpawner) validationErrors.append("§c- Missing Iron Spawner (Use §e/mapsetup setSpawner IRON§c)\n");
         if (!hasGoldSpawner) validationErrors.append("§c- Missing Gold Spawner (Use §e/mapsetup setSpawner GOLD§c)\n");
-        if (!hasDiamondSpawner) validationErrors.append("§c- Missing Diamond Spawner (Use §e/mapsetup setSpawner DIAMOND§c)\n");
+        if (!hasDiamondSpawner)
+            validationErrors.append("§c- Missing Diamond Spawner (Use §e/mapsetup setSpawner DIAMOND§c)\n");
 
         // Check villagers
         boolean hasShop = false;
@@ -115,9 +116,10 @@ public class FinishMapCommand extends SubCommand {
                 if (villager.getVillagerType() == VillagerType.UPGRADE) hasUpgrade = true;
             }
         }
-        
+
         if (!hasShop) validationErrors.append("§c- Missing Shop Villager (Use §e/mapsetup setVillager SHOP§c)\n");
-        if (!hasUpgrade) validationErrors.append("§c- Missing Upgrade Manager Villager (Use §e/mapsetup setVillager UPGRADE§c)\n");
+        if (!hasUpgrade)
+            validationErrors.append("§c- Missing Upgrade Manager Villager (Use §e/mapsetup setVillager UPGRADE§c)\n");
 
         // If there are validation errors, show them and don't finish
         if (validationErrors.length() > 0) {
@@ -136,11 +138,11 @@ public class FinishMapCommand extends SubCommand {
             player.sendMessage("§aSuccessfully finished map setup!");
             player.sendMessage("§7Map Information:");
             player.sendMessage("§7- Name: §e" + gameMap.getName());
-            player.sendMessage("§7- World: §e" + gameMap.getWordName());
+            player.sendMessage("§7- World: §e" + gameMap.getWorldName());
             player.sendMessage("§7- Teams: §e" + gameMap.getTeams().size() + " §7teams configured");
             player.sendMessage("§7- Spawners: §e" + (gameMap.getSpawners() != null ? gameMap.getSpawners().size() : 0) + " §7placed");
             player.sendMessage("§7- Villagers: §e" + (gameMap.getVillagers() != null ? gameMap.getVillagers().size() : 0) + " §7placed");
-            
+
             // Add detailed team information
             player.sendMessage("\n§7Team Details:");
             for (int i = 0; i < gameMap.getTeams().size(); i++) {
@@ -150,7 +152,7 @@ public class FinishMapCommand extends SubCommand {
                 player.sendMessage("§7  - Color: §e" + team.getColor().toString());
                 player.sendMessage("§7  - Spawners: §e" + (team.getSpawners() != null ? team.getSpawners().size() : 0) + " §7placed");
             }
-            
+
             player.sendMessage("\n§7The map has been saved and is ready to use!");
             player.sendMessage("§7You can now upload it to the database or start a new map setup.");
         }

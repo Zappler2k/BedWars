@@ -2,7 +2,6 @@ package de.zappler2k.bedWars.spigot;
 
 import de.zappler2k.bedWars.spigot.scoreboard.ScoreboardManager;
 import de.zappler2k.bedWars.spigot.tablist.TablistManager;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;

@@ -113,8 +113,8 @@ public class SetTeamColorCommand extends SubCommand {
 
     private String getAvailableColors() {
         return Arrays.stream(ChatColor.values())
-                .filter(color -> color != ChatColor.RESET && color != ChatColor.BOLD && 
-                        color != ChatColor.ITALIC && color != ChatColor.UNDERLINE && 
+                .filter(color -> color != ChatColor.RESET && color != ChatColor.BOLD &&
+                        color != ChatColor.ITALIC && color != ChatColor.UNDERLINE &&
                         color != ChatColor.STRIKETHROUGH && color != ChatColor.MAGIC)
                 .map(Enum::name)
                 .collect(Collectors.joining(", "));
@@ -124,8 +124,8 @@ public class SetTeamColorCommand extends SubCommand {
     public List<String> getSubCommandTabComplete(CommandSender sender, String[] args) {
         if (args.length == 2) {
             return Arrays.stream(ChatColor.values())
-                    .filter(color -> color != ChatColor.RESET && color != ChatColor.BOLD && 
-                            color != ChatColor.ITALIC && color != ChatColor.UNDERLINE && 
+                    .filter(color -> color != ChatColor.RESET && color != ChatColor.BOLD &&
+                            color != ChatColor.ITALIC && color != ChatColor.UNDERLINE &&
                             color != ChatColor.STRIKETHROUGH && color != ChatColor.MAGIC)
                     .map(Enum::name)
                     .map(String::toLowerCase)
