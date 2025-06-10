@@ -143,5 +143,6 @@ public final class BedWars extends JavaPlugin {
             logger.log(Level.SEVERE, "Fehler beim Initialisieren von Hibernate", e);
         }
         return null;
+
     }
 }
