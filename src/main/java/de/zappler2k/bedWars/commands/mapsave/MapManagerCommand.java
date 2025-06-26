@@ -3,7 +3,7 @@ package de.zappler2k.bedWars.commands.mapsave;
 import de.zappler2k.bedWars.BedWars;
 import de.zappler2k.bedWars.command.MainCommand;
 import de.zappler2k.bedWars.command.SubCommand;
-import de.zappler2k.bedWars.managers.MapManager;
+import de.zappler2k.bedWars.managers.map.MapManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 

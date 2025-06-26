@@ -1,9 +1,9 @@
 package de.zappler2k.bedWars.setup.map;
 
-import de.zappler2k.bedWars.map.objects.GameMap;
-import de.zappler2k.bedWars.map.objects.Spawner;
-import de.zappler2k.bedWars.map.objects.Team;
-import de.zappler2k.bedWars.map.objects.init.SpawnerType;
+import de.zappler2k.bedWars.objects.map.GameMap;
+import de.zappler2k.bedWars.objects.map.Spawner;
+import de.zappler2k.bedWars.objects.map.Team;
+import de.zappler2k.bedWars.objects.map.init.SpawnerType;
 import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.Location;

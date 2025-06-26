@@ -1,15 +1,15 @@
-package de.zappler2k.bedWars.managers;
+package de.zappler2k.bedWars.managers.map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.zappler2k.bedWars.hibernate.managers.MapEntityManager;
 import de.zappler2k.bedWars.json.init.LocationTypeAdapter;
 import de.zappler2k.bedWars.managers.world.WorldManager;
-import de.zappler2k.bedWars.map.objects.GameMap;
-import de.zappler2k.bedWars.map.objects.Spawner;
-import de.zappler2k.bedWars.map.objects.Villager;
-import de.zappler2k.bedWars.map.objects.init.SpawnerType;
-import de.zappler2k.bedWars.map.objects.init.VillagerType;
+import de.zappler2k.bedWars.objects.map.GameMap;
+import de.zappler2k.bedWars.objects.map.Spawner;
+import de.zappler2k.bedWars.objects.map.Villager;
+import de.zappler2k.bedWars.objects.map.init.SpawnerType;
+import de.zappler2k.bedWars.objects.map.init.VillagerType;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.Location;
@@ -44,7 +44,7 @@ public class MapManager {
 
     @SneakyThrows
     public String loadAllConfigs() {
-        File dirFolder = new File(this.plugin.getDataFolder() + "/configs");
+        File dirFolder = new File(this.plugin.getDataFolder() + "/configs/maps/");
         if (!dirFolder.exists()) {
             dirFolder.mkdirs();
             return "\u001B[31mNo config directory found. Created empty directory.\u001B[0m";
@@ -61,7 +61,7 @@ public class MapManager {
         List<String> existingMaps = new ArrayList<>();
 
         for (File file : files) {
-            if (file.isFile() && file.getName().endsWith(".json") && !file.getName().equalsIgnoreCase("lobby.json")) {
+            if (file.isFile() && file.getName().endsWith(".json")) {
                 try {
                     String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
                     GameMap map = new GsonBuilder()
@@ -631,7 +631,7 @@ public class MapManager {
             return "\u001B[31mError: No variant specified in config.yml! Please set 'variant' in your config.\u001B[0m";
         }
 
-        File dirFolder = new File(this.plugin.getDataFolder() + "/configs");
+        File dirFolder = new File(this.plugin.getDataFolder() + "/configs/maps");
         if (!dirFolder.exists()) {
             dirFolder.mkdirs();
             return "\u001B[31mNo config directory found. Created empty directory.\u001B[0m";
@@ -692,12 +692,14 @@ public class MapManager {
 
         // Build response message
         StringBuilder response = new StringBuilder();
-        response.append("\u001B[36m=== Local Map Loading Results for Variant '\u001B[33m").append(variant).append("\u001B[36m' ===\u001B[0m\n");
+        response.append("\n\u001B[36m╔════════════════════════════════════════════════════════════╗\u001B[0m\n");
+        response.append("\u001B[36m║\u001B[0m \u001B[33mLocal Map Loading Results for Variant '\u001B[36m").append(variant).append("\u001B[33m'\u001B[0m \u001B[36m║\u001B[0m\n");
+        response.append("\u001B[36m╚════════════════════════════════════════════════════════════╝\u001B[0m\n");
 
         if (!validMaps.isEmpty()) {
-            response.append("\u001B[32m✓ Successfully loaded \u001B[33m").append(validMaps.size()).append("\u001B[32m maps:\u001B[0m\n");
+            response.append("\n\u001B[32m✓ Successfully loaded \u001B[33m").append(validMaps.size()).append("\u001B[32m maps:\u001B[0m\n");
             for (GameMap map : validMaps) {
-                response.append("  - \u001B[33m").append(map.getName())
+                response.append("  \u001B[36m└─\u001B[0m \u001B[33m").append(map.getName())
                         .append("\u001B[0m (\u001B[33m").append(map.getTeams().size()).append("\u001B[0m teams)\n");
             }
         }
@@ -706,7 +708,7 @@ public class MapManager {
             response.append("\n\u001B[33m⚠ Skipped \u001B[31m").append(existingMaps.size())
                     .append("\u001B[33m already loaded maps:\u001B[0m\n");
             for (String mapName : existingMaps) {
-                response.append("  - \u001B[33m").append(mapName).append("\u001B[0m\n");
+                response.append("  \u001B[36m└─\u001B[0m \u001B[33m").append(mapName).append("\u001B[0m\n");
             }
         }
 
@@ -714,7 +716,7 @@ public class MapManager {
             response.append("\n\u001B[33m⚠ Skipped \u001B[31m").append(wrongVariantMaps.size())
                     .append("\u001B[33m maps with different variant:\u001B[0m\n");
             for (String mapName : wrongVariantMaps) {
-                response.append("  - \u001B[33m").append(mapName).append("\u001B[0m\n");
+                response.append("  \u001B[36m└─\u001B[0m \u001B[33m").append(mapName).append("\u001B[0m\n");
             }
         }
 
@@ -722,7 +724,7 @@ public class MapManager {
             response.append("\n\u001B[31m✗ Failed to load \u001B[33m").append(invalidMaps.size())
                     .append("\u001B[31m maps:\u001B[0m\n");
             for (String mapName : invalidMaps) {
-                response.append("  - \u001B[33m").append(mapName).append("\u001B[0m\n");
+                response.append("  \u001B[36m└─\u001B[0m \u001B[33m").append(mapName).append("\u001B[0m\n");
             }
         }
 
@@ -730,12 +732,15 @@ public class MapManager {
             return "\u001B[31mNo valid map configurations found in the configs directory.\u001B[0m";
         }
 
-        response.append("\n\u001B[36m=== Summary ===\u001B[0m\n");
-        response.append("Total files found: \u001B[33m").append(files.length).append("\u001B[0m\n");
-        response.append("Successfully loaded: \u001B[32m").append(validMaps.size()).append("\u001B[0m\n");
-        response.append("Already loaded: \u001B[33m").append(existingMaps.size()).append("\u001B[0m\n");
-        response.append("Wrong variant: \u001B[33m").append(wrongVariantMaps.size()).append("\u001B[0m\n");
-        response.append("Failed to load: \u001B[31m").append(invalidMaps.size()).append("\u001B[0m");
+        response.append("\n\u001B[36m╔════════════════════════════════════════════════════════════╗\u001B[0m\n");
+        response.append("\u001B[36m║\u001B[0m \u001B[33mSummary\u001B[0m \u001B[36m║\u001B[0m\n");
+        response.append("\u001B[36m╠════════════════════════════════════════════════════════════╣\u001B[0m\n");
+        response.append("\u001B[36m║\u001B[0m Total files found: \u001B[33m").append(files.length).append("\u001B[0m \u001B[36m║\u001B[0m\n");
+        response.append("\u001B[36m║\u001B[0m Successfully loaded: \u001B[32m").append(validMaps.size()).append("\u001B[0m \u001B[36m║\u001B[0m\n");
+        response.append("\u001B[36m║\u001B[0m Already loaded: \u001B[33m").append(existingMaps.size()).append("\u001B[0m \u001B[36m║\u001B[0m\n");
+        response.append("\u001B[36m║\u001B[0m Wrong variant: \u001B[33m").append(wrongVariantMaps.size()).append("\u001B[0m \u001B[36m║\u001B[0m\n");
+        response.append("\u001B[36m║\u001B[0m Failed to load: \u001B[31m").append(invalidMaps.size()).append("\u001B[0m \u001B[36m║\u001B[0m\n");
+        response.append("\u001B[36m╚════════════════════════════════════════════════════════════╝\u001B[0m\n");
 
         return response.toString();
     }

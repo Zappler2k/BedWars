@@ -1,0 +1,21 @@
+╔════════════════════════════════════════════════════════════╗
+║ Local Map Loading Results for Variant '4x4' ║
+╚════════════════════════════════════════════════════════════╝
+
+⚠ Skipped 1 already loaded maps:
+  └─ Mario
+
+╔════════════════════════════════════════════════════════════╗
+║ Summary ║
+╠════════════════════════════════════════════════════════════╣
+║ Total files found: 1 ║
+║ Successfully loaded: 0 ║
+║ Already loaded: 1 ║
+║ Wrong variant: 0 ║
+║ Failed to load: 0 ║
+╚════════════════════════════════════════════════════════════╝
+
+[20:10:23 INFO]: [BedWars] Loaded shop: default
+[20:10:23 INFO]: [BedWars] The Lobby config has been loaded successfully. mache die shop und lobby nachricht genauso schön und adavanced
+
+Shopsystem im Game implementieren

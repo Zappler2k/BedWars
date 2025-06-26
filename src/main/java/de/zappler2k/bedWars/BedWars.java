@@ -10,7 +10,7 @@ import de.zappler2k.bedWars.commands.teamsetup.init.TeamBedLocationListener;
 import de.zappler2k.bedWars.game.GameManager;
 import de.zappler2k.bedWars.hibernate.managers.MapEntityManager;
 import de.zappler2k.bedWars.hibernate.managers.StatsPlayerEntityManager;
-import de.zappler2k.bedWars.managers.MapManager;
+import de.zappler2k.bedWars.managers.map.MapManager;
 import de.zappler2k.bedWars.managers.world.WorldManager;
 import de.zappler2k.bedWars.setup.map.LobbySetupManager;
 import de.zappler2k.bedWars.setup.map.MapSetupManager;
@@ -77,12 +77,13 @@ public final class BedWars extends JavaPlugin {
             // Managers
             MapSetupManager mapSetupManager = new MapSetupManager(this);
             TeamSetupManager teamSetupManager = new TeamSetupManager(this, mapSetupManager);
-
+            LobbySetupManager lobbySetupManager = new LobbySetupManager(this);
             // Commands
             TeamSetup teamSetup = new TeamSetup("bedwars.admin.setup.team", teamSetupManager);
             commandManager.registerCommand("mapsetup", new MapSetup("bedwars.admin.setup.map", mapSetupManager));
             commandManager.registerCommand("teamsetup", teamSetup);
             commandManager.registerCommand("mapmanager", new MapManagerCommand("bedwars.admin.manager.map", mapManager, this));
+            commandManager.registerCommand("lobbymanager", new LobbyCommand(this, lobbySetupManager));
 
             // Register event listeners for setup mode
             getServer().getPluginManager().registerEvents(new TeamBedLocationListener(teamSetup), this);
@@ -95,13 +96,8 @@ public final class BedWars extends JavaPlugin {
             logger.log(Level.INFO, mapManager.loadConfigsByVariant());
         }
 
-        // Initialize LobbySetupManager and register LobbyCommand
-        LobbySetupManager lobbySetupManager = new LobbySetupManager(this);
-        commandManager.registerCommand("lobbymanager", new LobbyCommand(this, lobbySetupManager));
-
         SpigotManager spigotManager = new SpigotManager();
-        GameManager gameManager = new GameManager(this);
-        // JSONManager
+        GameManager gameManager = new GameManager(this, yamConfigurationConfig);
 
 
     }

@@ -2,7 +2,6 @@ package de.zappler2k.bedWars.managers.world;
 
 import de.zappler2k.bedWars.hibernate.entities.WorldEntity;
 import de.zappler2k.bedWars.hibernate.managers.WorldEntityManager;
-import de.zappler2k.bedWars.map.objects.GameMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;

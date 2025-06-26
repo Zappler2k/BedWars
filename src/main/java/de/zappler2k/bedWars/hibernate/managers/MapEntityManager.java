@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.zappler2k.bedWars.hibernate.entities.MapEntity;
 import de.zappler2k.bedWars.json.init.LocationTypeAdapter;
-import de.zappler2k.bedWars.map.objects.GameMap;
+import de.zappler2k.bedWars.objects.map.GameMap;
 import org.bukkit.Location;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,7 +13,6 @@ import org.hibernate.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class MapEntityManager {
     private final SessionFactory sessionFactory;

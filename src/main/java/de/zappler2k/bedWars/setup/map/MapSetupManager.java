@@ -3,12 +3,12 @@ package de.zappler2k.bedWars.setup.map;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.zappler2k.bedWars.json.init.LocationTypeAdapter;
-import de.zappler2k.bedWars.map.objects.GameMap;
-import de.zappler2k.bedWars.map.objects.Spawner;
-import de.zappler2k.bedWars.map.objects.Team;
-import de.zappler2k.bedWars.map.objects.Villager;
-import de.zappler2k.bedWars.map.objects.init.SpawnerType;
-import de.zappler2k.bedWars.map.objects.init.VillagerType;
+import de.zappler2k.bedWars.objects.map.GameMap;
+import de.zappler2k.bedWars.objects.map.Spawner;
+import de.zappler2k.bedWars.objects.map.Team;
+import de.zappler2k.bedWars.objects.map.Villager;
+import de.zappler2k.bedWars.objects.map.init.SpawnerType;
+import de.zappler2k.bedWars.objects.map.init.VillagerType;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.Location;
@@ -160,7 +160,7 @@ public class MapSetupManager {
 
         try {
             // Create config directory if it doesn't exist
-            File configDir = new File(plugin.getDataFolder() + "/configs");
+            File configDir = new File(plugin.getDataFolder() + "/configs/maps");
             if (!configDir.exists()) {
                 configDir.mkdirs();
             }

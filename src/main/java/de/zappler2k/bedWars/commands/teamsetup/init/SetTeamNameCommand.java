@@ -2,8 +2,8 @@ package de.zappler2k.bedWars.commands.teamsetup.init;
 
 import de.zappler2k.bedWars.command.SubCommand;
 import de.zappler2k.bedWars.commands.teamsetup.TeamSetup;
-import de.zappler2k.bedWars.map.objects.GameMap;
-import de.zappler2k.bedWars.map.objects.Team;
+import de.zappler2k.bedWars.objects.map.GameMap;
+import de.zappler2k.bedWars.objects.map.Team;
 import de.zappler2k.bedWars.setup.map.TeamSetupManager.TeamSetupStep;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

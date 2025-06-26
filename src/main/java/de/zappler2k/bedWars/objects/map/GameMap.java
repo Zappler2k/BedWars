@@ -1,4 +1,4 @@
-package de.zappler2k.bedWars.map.objects;
+package de.zappler2k.bedWars.objects.map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

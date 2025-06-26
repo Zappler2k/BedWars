@@ -1,4 +1,4 @@
-package de.zappler2k.bedWars.map.objects.init;
+package de.zappler2k.bedWars.objects.map.init;
 
 public enum SpawnerType {
 
